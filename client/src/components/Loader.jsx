@@ -22,13 +22,13 @@ const Loader = () => {
         alignItems="center"
         // spaceX="4"
       >
-        {/* <Image
-          src={"loader.svg"}
+        <Image
+          src={"Loader.svg"}
           alt="loader"
           w="50px"
           h="50px"
           animate="spin"
-        /> */}
+        />
         <Box>
           <Text fontSize="lg" fontWeight="semibold" color="gray.800">
             Transaction in Progress

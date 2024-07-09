@@ -14,7 +14,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
     if (isLoading) {
       return (
         <Image
-          src={"loader.svg"}
+          src={"Loader.svg"}
           alt="loader"
           boxSize="100px"
           objectFit="contain"

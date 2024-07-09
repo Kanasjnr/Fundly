@@ -53,10 +53,10 @@ const Footer = () => {
 
             <Stack align={"flex-start"}>
               <Flex gap={5} justify={{ base: "center", md: "flex-start" }}>
-                <Image src="/insta.png" width={10} height={10} />
-                <Image src="/facebook.png" width={10} height={10} />
-                <Image src="/link.png" width={10} height={10} />
-                <Image src="/twitter.png" width={10} height={10} />
+                <Image src="/instagram.png" width={10} height={10} />
+                <Image src="/Facebook.png" width={10} height={10} />
+                {/* <Image src="/link.png" width={10} height={10} /> */}
+                <Image src="/Twitter.png" width={10} height={10} />
               </Flex>
             </Stack>
           </SimpleGrid>

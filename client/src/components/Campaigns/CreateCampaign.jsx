@@ -242,12 +242,12 @@ const CreateCampaign = () => {
           h="120px"
           rounded="10px"
         >
-          <Image
+          {/* <Image
             src={"money.svg"}
             alt="money"
             boxSize="40px"
             objectFit="contain"
-          />
+          /> */}
           <Text
             as="h4"
             fontSize="25px"
