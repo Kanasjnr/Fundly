@@ -11,7 +11,7 @@ const FundCard = ({
   deadline,
   amountCollected,
   image,
-  category,
+  // category,
   handleClick,
 }) => {
   const remainingDays = daysLeft(deadline);
