@@ -18,7 +18,7 @@ const FundCard = ({
 
   return (
     <Box
-      cursor="pointer" // Always set cursor to pointer
+      cursor="pointer" 
       marginLeft="25px"
       marginTop="30px"
       w="full"

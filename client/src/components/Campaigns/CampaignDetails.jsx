@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useStateContext } from "../../context";
+import { calculateBarPercentage, daysLeft } from "../../utils/index";
 import Loader from "../Loader";
 import {
   Box,
@@ -10,15 +12,13 @@ import {
   Flex,
   Card,
   Button,
-  Avatar,
+  // Avatar,
 } from "@chakra-ui/react";
-import { calculateBarPercentage, daysLeft } from "../../utils";
-import { ethers } from "ethers"; // Import ethers for parsing ETH amounts
 
 const CampaignDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { donate, getDonations, Contract, address, transferDonationsToOwner, endCampaign } = useStateContext();
+  const { donate, getDonations, contract, address } = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState("");
@@ -32,14 +32,14 @@ const CampaignDetails = () => {
   };
 
   useEffect(() => {
-    if (Contract) fetchDonators();
-  }, [Contract, address]);
+    if (contract) fetchDonators();
+  }, [contract, address]);
 
   const handleDonate = async () => {
     try {
       setIsLoading(true);
       await donate(state.pId, amount);
-      // navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Donation failed", error);
     } finally {
@@ -47,29 +47,33 @@ const CampaignDetails = () => {
     }
   };
 
-  const handleTransferDonations = async () => {
-    try {
-      setIsLoading(true);
-      await transferDonationsToOwner(state.pId);
-      console.log("Donations transferred successfully");
-    } catch (error) {
-      console.error("Transfer failed", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleTransferDonations = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     await transferDonationsToRecipient(state.pId, recipientAddress);
+  //     console.log("Donations transferred successfully");
+  //   } catch (error) {
+  //     console.error("Transfer failed", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const handleEndCampaign = async () => {
-    try {
-      setIsLoading(true);
-      await endCampaign(state.pId);
-      console.log("Campaign ended successfully");
-    } catch (error) {
-      console.error("Ending campaign failed", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleEndCampaign = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     await endCampaign(state.pId);
+  //     console.log("Campaign ended successfully");
+  //   } catch (error) {
+  //     console.error("Ending campaign failed", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    console.log("State object:", state);
+  }, [state]);
 
   return (
     <Flex flexDirection="column">
@@ -133,10 +137,10 @@ const CampaignDetails = () => {
                     color="white"
                   >
                     {state && state.amountCollected
-                      ? state.amountCollected
+                      ? `$${state.amountCollected}`
                       : ""}
                   </Text>
-                  <span className="text4">{`Raised of ${
+                  <span className="text4">{`Raised of $${
                     state && state.target ? state.target : ""
                   }`}</span>
                 </Flex>
@@ -195,7 +199,7 @@ const CampaignDetails = () => {
                 bg="#4a5568"
                 cursor="pointer"
               >
-                <Avatar src="https://bit.ly/broken-link" />
+                {/* <Avatar src={thirdweb} /> */}
               </Box>
               <Box>
                 <Text
@@ -205,7 +209,6 @@ const CampaignDetails = () => {
                 >
                   {state && state.owner ? state.owner : "Owner Not Available"}
                 </Text>
-
                 <Text color="gray.400"> Campaigns</Text>
               </Box>
             </Flex>
@@ -236,7 +239,7 @@ const CampaignDetails = () => {
                       <Text color="gray.500" overflowWrap="break-word">
                         {index + 1}. {item.donator}
                       </Text>
-                      <Text color="gray.400">${item.donation}</Text>
+                      <Text color="gray.400">{item.donations}</Text>
                     </Flex>
                   ))
                 ) : (
@@ -299,18 +302,35 @@ const CampaignDetails = () => {
               </Button>
             </Card>
 
-            <Button
-              mt={4}
-              width="full"
-              bg="#3182ce"
-              color="white"
-              _hover={{ bg: "#63b3ed" }}
-              onClick={handleTransferDonations}
-            >
-              Transfer Donations to Owner
-            </Button>
+            {/* <Card p={4} bg="#2d3748" rounded="lg" mt={4}>
+              <Text fontSize="xl" fontWeight="medium" color="white" mb={6}>
+                Transfer Donations
+              </Text>
+              <Input
+                type="text"
+                placeholder="Recipient Address"
+                value={recipientAddress}
+                onChange={(e) => setRecipientAddress(e.target.value)}
+                mb={4}
+                px={4}
+                py={2}
+                border="1px"
+                borderColor="#4a5568"
+                bg="gray.700"
+                color="white"
+              />
+              <Button
+                width="full"
+                bg="#3182ce"
+                color="white"
+                _hover={{ bg: "#63b3ed" }}
+                onClick={handleTransferDonations}
+              >
+                Transfer Donations
+              </Button>
+            </Card> */}
 
-            <Button
+            {/* <Button
               mt={4}
               width="full"
               bg="#e53e3e"
@@ -319,7 +339,7 @@ const CampaignDetails = () => {
               onClick={handleEndCampaign}
             >
               End Campaign
-            </Button>
+            </Button> */}
           </Flex>
         </Box>
       </Flex>

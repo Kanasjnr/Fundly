@@ -1,12 +1,8 @@
-import React from 'react';
-import { Box, Text } from '@chakra-ui/react';
-
+import React from "react";
+import { Box, Text } from "@chakra-ui/react";
 
 const CountBox = ({ title, value }) => {
   return (
-   
-
-    
     <Box
       display="flex"
       flexDirection="column"
@@ -44,7 +40,6 @@ const CountBox = ({ title, value }) => {
         {title}
       </Text>
     </Box>
-    
   );
 };
 

@@ -1,8 +1,8 @@
 import React, { useContext, createContext } from "react";
+
 import {
   useAddress,
   useContract,
-  useLogout,
   useMetamask,
   useContractWrite,
 } from "@thirdweb-dev/react";
@@ -12,7 +12,7 @@ const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
   const { contract } = useContract(
-    "0xa3d564A3dff633Dd1d5810d36E2E02c3F4954431"
+    "0x138D1154250b3efD7A7243EdF798127EbB9E05d0"
   );
   const { mutateAsync: createCampaign } = useContractWrite(
     contract,
@@ -21,124 +21,78 @@ export const StateContextProvider = ({ children }) => {
 
   const address = useAddress();
   const connect = useMetamask();
-  const logout = useLogout();
 
   const publishCampaign = async (form) => {
-    if (!contract) {
-      console.error("Contract instance is undefined");
-      return;
-    }
     try {
       const data = await createCampaign({
         args: [
-          address,
-          form.title,
-          form.description,
+          address, 
+          form.title, 
+          form.description, 
           form.target,
-          new Date(form.deadline).getTime(),
+          new Date(form.deadline).getTime(), 
           form.image,
         ],
       });
 
-      console.log("Contract call success", data);
+      console.log("contract call success", data);
     } catch (error) {
-      console.error("Contract call failure", error);
+      console.log("contract call failure", error);
     }
   };
 
   const getCampaigns = async () => {
-    if (!contract) {
-      console.error("Contract instance is undefined");
-      return [];
-    }
-    try {
-      const campaigns = await contract.call("getCampaigns");
+    const campaigns = await contract.call("getCampaigns");
 
-      const parsedCampaigns = campaigns.map((campaign, i) => ({
-        owner: campaign.owner,
-        title: campaign.title,
-        description: campaign.description,
-        target: ethers.utils.formatEther(campaign.target.toString()),
-        deadline: campaign.deadline.toNumber(),
-        amountCollected: ethers.utils.formatEther(
-          campaign.amountCollected.toString()
-        ),
-        image: campaign.image,
-        pId: i,
-      }));
+    const parsedCampaings = campaigns.map((campaign, i) => ({
+      owner: campaign.owner,
+      title: campaign.title,
+      description: campaign.description,
+      target: ethers.utils.formatEther(campaign.target.toString()),
+      deadline: campaign.deadline.toNumber(),
+      amountCollected: ethers.utils.formatEther(
+        campaign.amountCollected.toString()
+      ),
+      image: campaign.image,
+      pId: i,
+    }));
 
-      return parsedCampaigns;
-    } catch (error) {
-      console.error("Error fetching campaigns", error);
-      return [];
-    }
+    return parsedCampaings;
   };
 
   const getUserCampaigns = async () => {
     const allCampaigns = await getCampaigns();
-    return allCampaigns.filter((campaign) => campaign.owner === address);
+
+    const filteredCampaigns = allCampaigns.filter(
+      (campaign) => campaign.owner === address
+    );
+
+    return filteredCampaigns;
   };
 
-  const donate = async (amount) => {
-    try {
-        await contract.call("donateToCampaign", [amount]);
-        console.log("Donation successful");
-    } catch (error) {
-        console.error("Error donating to campaign", error);
-    }
-};
+  const donate = async (pId, amount) => {
+    const data = await contract.call("donateCampaign", [pId], {
+      value: ethers.utils.parseEther(amount),
+    });
+
+    return data;
+  };
 
   const getDonations = async (pId) => {
-    if (!contract) {
-      console.error("Contract instance is undefined");
-      return [];
-    }
-    try {
-      const donations = await contract.call("getDonators", [pId]);
-      const numberOfDonations = donations[0].length;
+    const donations = await contract.call("getDonators", [pId]);
+    const numberOfDonations = donations[0].length;
 
-      const parsedDonations = [];
-      for (let i = 0; i < numberOfDonations; i++) {
-        parsedDonations.push({
-          donator: donations[0][i],
-          donation: ethers.utils.formatEther(donations[1][i].toString()),
-        });
-      }
+    const parsedDonations = [];
 
-      return parsedDonations;
-    } catch (error) {
-      console.error("Error fetching donations", error);
-      return [];
+    for (let i = 0; i < numberOfDonations; i++) {
+      parsedDonations.push({
+        donator: donations[0][i],
+        donations: ethers.utils.formatEther(donations[1][i].toString()),
+      });
     }
+
+    return parsedDonations;
   };
-
-  const transferDonationsToOwner = async (pId) => {
-    if (!contract) {
-      console.error("Contract instance is undefined");
-      return;
-    }
-    try {
-      const data = await contract.call("transferDonationsToOwner", [pId]);
-      console.log("Transfer success", data);
-    } catch (error) {
-      console.error("Transfer failed", error);
-    }
-  };
-
-  const endCampaign = async (pId) => {
-    if (!contract) {
-      console.error("Contract instance is undefined");
-      return;
-    }
-    try {
-      const data = await contract.call("endCampaign", [pId]);
-      console.log("End campaign success", data);
-    } catch (error) {
-      console.error("End campaign failure", error);
-    }
-  };
-
-
 
   return (
     <StateContext.Provider
@@ -146,14 +100,11 @@ export const StateContextProvider = ({ children }) => {
         address,
         contract,
         connect,
-        logout,
         createCampaign: publishCampaign,
         getCampaigns,
         getUserCampaigns,
         donate,
         getDonations,
-        transferDonationsToOwner,
-        endCampaign,
       }}
     >
       {children}
