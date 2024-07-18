@@ -7,7 +7,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [completedCampaigns, setCompletedCampaigns] = useState([]);
   const [ongoingCampaigns, setOngoingCampaigns] = useState([]);
-  const [canceledCampaigns, setCanceledCampaigns] = useState([]);
+  
 
   const { address, contract, getUserCampaigns } = useStateContext();
 
@@ -17,7 +17,7 @@ const Profile = () => {
     
     const completed = [];
     const ongoing = [];
-    const canceled = [];
+  
     
     // Iterate over each campaign data
     data.forEach(campaign => {
@@ -38,7 +38,7 @@ const Profile = () => {
     
     setCompletedCampaigns(completed);
     setOngoingCampaigns(ongoing);
-    setCanceledCampaigns(canceled);
+   
     
     setIsLoading(false);
   }
@@ -50,20 +50,16 @@ const Profile = () => {
   return (
     <>
       <DisplayCampaigns 
-        title="Completed Campaigns"
+        title="ongoing Campaigns"
         isLoading={isLoading}
         campaigns={completedCampaigns}
       />
       <DisplayCampaigns 
-        title="Ongoing Campaigns"
+        title="Completed Campaigns"
         isLoading={isLoading}
         campaigns={ongoingCampaigns}
       />
-      <DisplayCampaigns 
-        title="Canceled Campaigns"
-        isLoading={isLoading}
-        campaigns={canceledCampaigns}
-      />
+     
     </>
   );
 }

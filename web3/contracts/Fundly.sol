@@ -29,7 +29,7 @@ contract Fundly {
         Campaign storage campaign = campaigns[numberOfCampaigns];
 
         require(
-            campaign.deadline < block.timestamp,
+            _deadline > block.timestamp,
             "The deadline should be a date in the future."
         );
 
@@ -54,12 +54,22 @@ contract Fundly {
         campaign.donators.push(msg.sender);
         campaign.donations.push(amount);
 
-        (bool sent, ) = payable(campaign.owner).call{value: amount}("");
-
-        if (sent) {
-            campaign.amountCollected = campaign.amountCollected + amount;
-        }
+        campaign.amountCollected += amount;
     }
+
+  function payout(uint256 _id) public {
+    Campaign storage campaign = campaigns[_id];
+
+    require(msg.sender == campaign.owner, "Only the campaign owner can withdraw funds");
+    require(campaign.amountCollected >= campaign.target, "Campaign target not reached");
+
+    uint256 payoutAmount = campaign.amountCollected;
+    campaign.amountCollected = 0;
+
+    (bool sent, ) = payable(campaign.owner).call{value: payoutAmount}("");
+    require(sent, "Failed to send funds to the campaign owner");
+}
+
 
     function getDonators(
         uint256 _id
@@ -72,7 +82,6 @@ contract Fundly {
 
         for (uint i = 0; i < numberOfCampaigns; i++) {
             Campaign storage item = campaigns[i];
-
             allCampaigns[i] = item;
         }
 

@@ -39,13 +39,7 @@ const FundCard = ({
 
       <Box p="4">
         <Flex flexDir="column" mb="18px">
-          <Image
-            src={"type.svg"}
-            alt="tag"
-            w="17px"
-            h="17px"
-            objectFit="contain"
-          />
+        
           <Text
             ml="12px"
             mt="2px"
@@ -120,7 +114,7 @@ const FundCard = ({
               maxW="120px"
               isTruncated
             >
-              Ongoing
+              Completed
             </Text>
           </Box>
         </Flex>

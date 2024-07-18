@@ -1,5 +1,4 @@
 import React, { useContext, createContext } from "react";
-
 import {
   useAddress,
   useContract,
@@ -12,7 +11,7 @@ const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
   const { contract } = useContract(
-    "0x138D1154250b3efD7A7243EdF798127EbB9E05d0"
+    "0xC2Df509fd797B16997E4AE3Bd09078b08d19fFf0"
   );
   const { mutateAsync: createCampaign } = useContractWrite(
     contract,
@@ -26,11 +25,11 @@ export const StateContextProvider = ({ children }) => {
     try {
       const data = await createCampaign({
         args: [
-          address, 
-          form.title, 
-          form.description, 
+          address,
+          form.title,
+          form.description,
           form.target,
-          new Date(form.deadline).getTime(), 
+          new Date(form.deadline).getTime(),
           form.image,
         ],
       });
@@ -94,6 +93,19 @@ export const StateContextProvider = ({ children }) => {
     return parsedDonations;
   };
 
+  // Add the payout function
+  const payout = async (pId) => {
+    try {
+      const data = await contract.call("payout", [pId]);
+
+      console.log("Payout successful", data);
+      return data;
+    } catch (error) {
+      console.log("Payout failed", error);
+      throw error;
+    }
+  };
+
   return (
     <StateContext.Provider
       value={{
@@ -105,6 +117,7 @@ export const StateContextProvider = ({ children }) => {
         getUserCampaigns,
         donate,
         getDonations,
+        payout, // Expose payout function
       }}
     >
       {children}

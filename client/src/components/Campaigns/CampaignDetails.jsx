@@ -18,7 +18,7 @@ import {
 const CampaignDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { donate, getDonations, contract, address } = useStateContext();
+  const { donate, getDonations, contract, address, payout } = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState("");
@@ -47,29 +47,17 @@ const CampaignDetails = () => {
     }
   };
 
-  // const handleTransferDonations = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     await transferDonationsToRecipient(state.pId, recipientAddress);
-  //     console.log("Donations transferred successfully");
-  //   } catch (error) {
-  //     console.error("Transfer failed", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // const handleEndCampaign = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     await endCampaign(state.pId);
-  //     console.log("Campaign ended successfully");
-  //   } catch (error) {
-  //     console.error("Ending campaign failed", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handlePayout = async () => {
+    try {
+      setIsLoading(true);
+      await payout(state.pId);
+      console.log("Payout was successful");
+    } catch (error) {
+      console.error("Payout failed", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     console.log("State object:", state);
@@ -199,7 +187,6 @@ const CampaignDetails = () => {
                 bg="#4a5568"
                 cursor="pointer"
               >
-                {/* <Avatar src={thirdweb} /> */}
               </Box>
               <Box>
                 <Text
@@ -302,44 +289,18 @@ const CampaignDetails = () => {
               </Button>
             </Card>
 
-            {/* <Card p={4} bg="#2d3748" rounded="lg" mt={4}>
-              <Text fontSize="xl" fontWeight="medium" color="white" mb={6}>
-                Transfer Donations
-              </Text>
-              <Input
-                type="text"
-                placeholder="Recipient Address"
-                value={recipientAddress}
-                onChange={(e) => setRecipientAddress(e.target.value)}
-                mb={4}
-                px={4}
-                py={2}
-                border="1px"
-                borderColor="#4a5568"
-                bg="gray.700"
-                color="white"
-              />
+            {address === state.owner && (
               <Button
+                mt={4}
                 width="full"
-                bg="#3182ce"
-                color="white"
-                _hover={{ bg: "#63b3ed" }}
-                onClick={handleTransferDonations}
+                bg="#1DAA97"
+                color="black"
+                _hover={{ bg: "white", color: "#1DAA97" }}
+                onClick={handlePayout}
               >
-                Transfer Donations
+                Payout
               </Button>
-            </Card> */}
-
-            {/* <Button
-              mt={4}
-              width="full"
-              bg="#e53e3e"
-              color="white"
-              _hover={{ bg: "#fc8181" }}
-              onClick={handleEndCampaign}
-            >
-              End Campaign
-            </Button> */}
+            )}
           </Flex>
         </Box>
       </Flex>
