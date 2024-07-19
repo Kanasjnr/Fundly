@@ -11,7 +11,7 @@ export const daysLeft = (deadline) => {
 
 export const calculateBarPercentage = (goal, raisedAmount) => {
   if (raisedAmount === 0) {
-    return { percentage: 0, status: "canceled" };
+    return { percentage: 0, status: "ongoing" };
   } else if (raisedAmount >= goal) {
     return { percentage: 100, status: "completed" };
   } else {
@@ -19,6 +19,7 @@ export const calculateBarPercentage = (goal, raisedAmount) => {
     return { percentage, status: "ongoing" };
   }
 };
+
 
 export const checkIfImage = (url, callback) => {
   const img = new Image();
