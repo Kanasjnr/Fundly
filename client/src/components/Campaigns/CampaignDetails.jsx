@@ -12,7 +12,7 @@ import {
   Flex,
   Card,
   Button,
-  // Avatar,
+  useToast,
 } from "@chakra-ui/react";
 
 const CampaignDetails = () => {
@@ -23,6 +23,7 @@ const CampaignDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState("");
   const [donators, setDonators] = useState([]);
+  const toast = useToast();
 
   const remainingDays = state && state.deadline ? daysLeft(state.deadline) : 0;
 
@@ -39,8 +40,22 @@ const CampaignDetails = () => {
     try {
       setIsLoading(true);
       await donate(state.pId, amount);
+      toast({
+        title: "Donation Successful",
+        description: "Thank you for your donation!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
       navigate("/dashboard");
     } catch (error) {
+      toast({
+        title: "Donation Failed",
+        description: "There was an error processing your donation.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       console.error("Donation failed", error);
     } finally {
       setIsLoading(false);
@@ -51,8 +66,22 @@ const CampaignDetails = () => {
     try {
       setIsLoading(true);
       await payout(state.pId);
+      toast({
+        title: "Payout Successful",
+        description: "The payout was successful.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
       console.log("Payout was successful");
     } catch (error) {
+      toast({
+        title: "Payout Failed",
+        description: "There was an error processing the payout.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       console.error("Payout failed", error);
     } finally {
       setIsLoading(false);

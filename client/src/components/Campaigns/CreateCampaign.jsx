@@ -40,18 +40,17 @@ const CreateCampaign = () => {
   };
   const handleImageUpload = (e) => {
     try {
-        const file = e.target.files[0];
-        if (file) {
-            const blobUrl = URL.createObjectURL(file);
-            setForm({ ...form, image: blobUrl });
-        } else {
-            console.error('No file selected.');
-        }
+      const file = e.target.files[0];
+      if (file) {
+        const blobUrl = URL.createObjectURL(file);
+        setForm({ ...form, image: blobUrl });
+      } else {
+        console.error("No file selected.");
+      }
     } catch (error) {
-        console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     }
-};
-
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -194,46 +193,6 @@ const CreateCampaign = () => {
           />
         </FormControl>
 
-        {/* <FormControl isRequired>
-          <FormLabel fontSize="15px" color="white">
-            Campaign Category
-          </FormLabel> */}
-          {/* <Men>
-  <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-    Actions
-  </MenuButton>
-  <MenuList>
-    <MenuItem>Download</MenuItem>
-    <MenuItem>Create a Copy</MenuItem>
-    <MenuItem>Mark as Draft</MenuItem>
-    <MenuItem>Delete</MenuItem>
-    <MenuItem>Attend a Workshop</MenuItem>
-  </MenuList>
-</Menu> */}
-          {/* <Select
-            py="10px"
-            px={["15px", "25px", "15px"]}
-            outline="none"
-            border="1px"
-            borderColor="#3a3a43"
-            bg="transparent"
-            fontFamily="epilogue"
-            color="white"
-            fontSize="15px"
-            placeholdercolor="#4b5264"
-            // borderRadius="10px"
-            minW={["auto", "300px"]}
-            placeholder="Select category..."
-            // placeholdercolor="white"
-            value={form.category}
-            onChange={(e) => handleFormFieldChange("category", e)}
-          >
-            <option value="health">Health</option>
-            <option value="charity">Charity</option>
-            <option value="disability">Disability</option>
-          </Select>
-        </FormControl> */}
-
         <Box
           justify="start"
           align="center"
@@ -242,12 +201,6 @@ const CreateCampaign = () => {
           h="120px"
           rounded="10px"
         >
-          {/* <Image
-            src={"money.svg"}
-            alt="money"
-            boxSize="40px"
-            objectFit="contain"
-          /> */}
           <Text
             as="h4"
             fontSize="25px"
@@ -336,15 +289,9 @@ const CreateCampaign = () => {
             style={{ marginTop: "10px" }}
           />
           {form.image && (
-            <Image
-              src={form.image}
-              alt="Campaign"
-              maxW="300px"
-              mt="10px"
-            />
+            <Image src={form.image} alt="Campaign" maxW="300px" mt="10px" />
           )}
         </FormControl>
-
 
         <Box justify="center" align="center" mt={6} padding="16px 8px">
           {isLoading && <Loader />}
