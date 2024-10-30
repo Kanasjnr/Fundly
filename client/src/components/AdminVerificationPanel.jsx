@@ -1,4 +1,3 @@
-'use client';
 
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
@@ -23,6 +22,7 @@ import {
   Spinner,
   HStack,
   Divider,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import { contractAbi, contractAddress } from '../utils/constants';
@@ -193,14 +193,14 @@ export default function AdminVerificationPanel() {
     <Container maxW="container.xl" p={4}>
       <Box borderWidth={1} borderRadius="lg" p={6} boxShadow="md" bg="white">
         <VStack spacing={6} align="stretch">
-          <Heading as="h1" size="xl" textAlign="center" color="teal.500">
+          <Heading as="h1" size={{ base: 'lg', md: 'xl' }} textAlign="center" color="teal.500">
             Verification Panel
           </Heading>
-          <Text fontSize="md" textAlign="center" color="gray.600">
+          <Text fontSize={{ base: 'sm', md: 'md' }} textAlign="center" color="gray.600">
             Manage verification requests
           </Text>
           <HStack justify="space-between" align="center">
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize={{ base: 'xs', md: 'sm' }} color="gray.600">
               Connected address: <strong>{userAddress}</strong>
             </Text>
             <Button
@@ -215,7 +215,7 @@ export default function AdminVerificationPanel() {
             </Button>
           </HStack>
           {lastRefresh && (
-            <Text fontSize="xs" color="gray.500" textAlign="right">
+            <Text fontSize={{ base: 'xs', md: 'sm' }} color="gray.500" textAlign="right">
               Last updated: {lastRefresh.toLocaleTimeString()}
             </Text>
           )}
