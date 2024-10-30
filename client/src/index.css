@@ -1,0 +1,51 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.linear-gradient {
+  background: linear-gradient(179.14deg, rgba(32, 18, 63, 0) -7.14%, #000000 87.01%);
+}
+input[type=date] ::-webkit-calender-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.8);
+}
+* {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  text-decoration: none;
+}
+.text {
+  color: #1c1c1c;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: center;
+}
+.text2 {
+  color: #1c1c1c;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.text3 {
+  color: black;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0.1px;
+}
+.text4 {
+  color: #1c1c1c;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 550;
+  line-height: normal;
+  letter-spacing: 0.18px;
+  text-align: center;
+}
