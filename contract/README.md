@@ -71,7 +71,7 @@ We welcome contributions to Fundly! Please read our [CONTRIBUTING.md](CONTRIBUTI
 
 ## Security
 
-Security is paramount in Web3 applications. If you discover any security issues, please email security@fundly.io instead of using the issue tracker.
+Security is paramount in Web3 applications. If you discover any security issues, please email fundly101@gmail.com instead of using the issue tracker.
 
 ## License
 
@@ -79,14 +79,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Support
 
-If you encounter any issues or have questions, please file an issue on the GitHub repository or contact our support team at support@fundly.io.
+If you encounter any issues or have questions, please file an issue on the GitHub repository or contact our support team at fundly101@gmail.com.
 
-## Community
-
-Join our vibrant community:
-- Discord: [Fundly Discord](https://discord.gg/fundly)
-- Twitter: [@FundlyOfficial](https://twitter.com/FundlyOfficial)
-- Telegram: [Fundly Community](https://t.me/fundlycommunity)
 
 
 Empowering decentralized fundraising with Fundly 🚀
