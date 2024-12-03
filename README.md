@@ -20,12 +20,12 @@ To get started with Fundly, follow these steps:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/fundly/fundly-platform.git
+   git clone https://github.com/Kanasjnr/Fundly.git
    ```
 
 2. Install dependencies:
    ```
-   cd fundly-platform
+   cd fundly
    npm install
    ```
 
