@@ -1,28 +1,13 @@
 require("@nomicfoundation/hardhat-toolbox");
-const vars = require("hardhat/config").vars;
-
-const ALCHEMY_API_KEY = vars.get("ALCHEMY_API_KEY");
-const BASESCAN_API_KEY = vars.get("BASESCAN_API_KEY");
+require("dotenv").config();
 
 module.exports = {
-  solidity: "0.8.27",
+  solidity: "0.8.26",
   networks: {
-    sepolia: {
-      url: `https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-      accounts: [vars.get("MY_KEY")],
+    crossFi: {
+      url: process.env.CROSSFI_RPC_URL,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 1000000000, // You can replace this with dynamic gas fees in the deployment script
     },
-  },
-  etherscan: {
-    apiKey: BASESCAN_API_KEY,
-    customChains: [
-      {
-        network: "baseSepolia",
-        chainId: 84532,
-        urls: {
-          apiURL: "https://api-sepolia.basescan.org/api",
-          browserURL: "https://sepolia.basescan.org",
-        },
-      },
-    ],
   },
 };
