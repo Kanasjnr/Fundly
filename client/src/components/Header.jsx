@@ -1,32 +1,38 @@
-import React from "react"
-
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "../components/ui/button"
-import { Wallet, Menu, X } from "lucide-react"
+import React from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../components/ui/button";
+import { Wallet, Menu, X } from "lucide-react";
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navItems = [
     { href: "#features", text: "Features" },
     { href: "#how-it-works", text: "How It Works" },
     { href: "#testimonials", text: "Testimonials" },
-  ]
+  ];
+
+  // Define the theme variables
+  const themeVariables = {
+    "--w3m-color-mix": "#1c1917",
+    "--w3m-color-mix-strength": 40,
+    "--wcm-accent-color": "#4CAF50", // Green color for the button
+  };
 
   return (
     <motion.header
       className={`py-4 px-6 md:px-12 flex justify-between items-center fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-    "bg-white shadow-lg"
+        isScrolled ? "bg-white shadow-lg" : "bg-transparent"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -39,7 +45,11 @@ const Header = () => {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center space-x-6">
         {navItems.map((item) => (
-          <a key={item.href} href={item.href} className="text-fundly-800 hover:text-fundly-600 transition-colors">
+          <a
+            key={item.href}
+            href={item.href}
+            className="text-fundly-800 hover:text-fundly-600 transition-colors"
+          >
             {item.text}
           </a>
         ))}
@@ -56,7 +66,11 @@ const Header = () => {
             className="md:hidden flex flex-col absolute top-full left-0 w-full bg-white p-6 shadow-md space-y-4"
           >
             {navItems.map((item) => (
-              <a key={item.href} href={item.href} className="text-fundly-800 hover:text-fundly-600 transition-colors">
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-fundly-800 hover:text-fundly-600 transition-colors"
+              >
                 {item.text}
               </a>
             ))}
@@ -65,19 +79,22 @@ const Header = () => {
       </AnimatePresence>
 
       <div className="flex items-center">
-        <Button
-          variant="outline"
-          className="hidden md:flex items-center border-fundly-500 text-fundly-500 hover:bg-fundly-500 hover:text-white transition-all duration-300"
+        {/* Apply the themeVariables to the appkit-button */}
+        <appkit-button themeVariables={themeVariables} />
+
+        <button
+          className="md:hidden ml-4"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          <Wallet className="mr-2 h-4 w-4" /> Connect Wallet
-        </Button>
-        <button className="md:hidden ml-4" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X className="h-6 w-6 text-fundly-500" /> : <Menu className="h-6 w-6 text-fundly-500" />}
+          {isMenuOpen ? (
+            <X className="h-6 w-6 text-fundly-500" />
+          ) : (
+            <Menu className="h-6 w-6 text-fundly-500" />
+          )}
         </button>
       </div>
     </motion.header>
-  )
-}
+  );
+};
 
-export default Header
-
+export default Header;
