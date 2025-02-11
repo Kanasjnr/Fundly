@@ -59,8 +59,7 @@ export const appkit = createAppKit({
   themeVariables: {
     '--w3m-color-mix': '#1c1917',
     '--w3m-color-mix-strength': 40,
-    "--wcm-accent-color" : "#FFFFFF"
-  },
+    "--wcm-accent-color": "#4CAF50",  },
   themeMode: "dark",
   features: {
     analytics: true,

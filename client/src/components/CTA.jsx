@@ -5,23 +5,21 @@ import { ArrowRight } from "lucide-react"
 
 const CTA = () => {
   return (
-    <section className="py-20 px-6 md:px-12 bg-gradient-to-r from-fundly-700 to-fundly-900 text-white relative overflow-hidden">
+    <section className="relative py-20 px-6 md:px-12 bg-gradient-to-r from-fundly-700 to-fundly-900 text-white overflow-hidden">
+      {/* Parallax Background */}
       <motion.div
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 bg-[url('/cta-background-pattern.svg')] bg-cover opacity-10"
         animate={{
           backgroundPosition: ["0% 0%", "100% 100%"],
-          scale: [1, 1.1, 1],
         }}
         transition={{
           duration: 20,
           repeat: Number.POSITIVE_INFINITY,
           repeatType: "reverse",
         }}
-        style={{
-          backgroundImage: 'url("/cta-background-pattern.svg")',
-          backgroundSize: "cover",
-        }}
       />
+
+      {/* CTA Content */}
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <motion.h2
           className="text-3xl md:text-5xl font-bold mb-6 leading-tight"
@@ -58,8 +56,8 @@ const CTA = () => {
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
 export default CTA
 

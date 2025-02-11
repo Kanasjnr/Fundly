@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 "use client"
 import { motion } from "framer-motion"
@@ -9,7 +9,7 @@ const Footer = () => {
     { Icon: Twitter, href: "#" },
     { Icon: Facebook, href: "#" },
     { Icon: Instagram, href: "#" },
-    { Icon: GitHub, href: "#" },
+    { Icon: GitHub, href: "https://github.com/Kanasjnr/Fundly" },
   ]
 
   return (
