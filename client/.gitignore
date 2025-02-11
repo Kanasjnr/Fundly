@@ -6,9 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-0x6412C4617F59F897f7cFaE9135aAde414E2E73C5
+
 node_modules
-.env
 dist
 dist-ssr
 *.local
