@@ -1,8 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "../components/ui/button";
-import { Wallet, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,12 +21,7 @@ const Header = () => {
     { href: "#testimonials", text: "Testimonials" },
   ];
 
-  // Define the theme variables
-  const themeVariables = {
-    "--w3m-color-mix": "#1c1917",
-    "--w3m-color-mix-strength": 40,
-    "--wcm-accent-color": "#4CAF50", // Green color for the button
-  };
+  
 
   return (
     <motion.header
@@ -48,7 +42,7 @@ const Header = () => {
           <a
             key={item.href}
             href={item.href}
-            className="text-fundly-800 hover:text-fundly-600 transition-colors"
+            className="text-fundly-800 hover:text-fundly-600 transition-colors font-semibold"
           >
             {item.text}
           </a>
@@ -79,8 +73,7 @@ const Header = () => {
       </AnimatePresence>
 
       <div className="flex items-center">
-        {/* Apply the themeVariables to the appkit-button */}
-        <appkit-button themeVariables={themeVariables} />
+        <appkit-button  />
 
         <button
           className="md:hidden ml-4"

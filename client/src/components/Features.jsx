@@ -49,7 +49,7 @@ const Features = () => {
         {features.map((feature, index) => (
           <motion.div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-lg border border-fundly-100"
+            className="bg-white p-6 rounded-lg shadow-lg border border-fundly-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -70,8 +70,8 @@ const Features = () => {
         ))}
       </div>
     </section>
-  )
-}
+  );
+};
 
 export default Features
 

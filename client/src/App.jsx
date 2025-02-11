@@ -9,7 +9,6 @@ import Testimonials from "./components/Testimonials"
 import Stats from "./components/Stats"
 import CTA from "./components/CTA"
 import Footer from "./components/Footer"
-import WaveAnimation from "./components/WaveAnimation"
 
 function App() {
   return (
@@ -22,7 +21,6 @@ function App() {
         <Testimonials />
         <Stats />
         <CTA />
-        <WaveAnimation />
       </main>
       <Footer />
     </div>
