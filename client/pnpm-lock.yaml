@@ -65,9 +65,12 @@ importers:
       react-router-dom:
         specifier: ^6.29.0
         version: 6.29.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-toastify:
+        specifier: ^9.1.3
+        version: 9.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       swiper:
         specifier: ^11.2.2
-        version: 11.2.2
+        version: 11.2.3
       tailwind-merge:
         specifier: ^3.0.1
         version: 3.0.1
@@ -104,7 +107,7 @@ importers:
         version: 0.4.19(eslint@9.20.1(jiti@1.21.7))
       globals:
         specifier: ^15.14.0
-        version: 15.14.0
+        version: 15.15.0
       postcss:
         specifier: ^8.5.2
         version: 8.5.2
@@ -1119,8 +1122,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  call-bind-apply-helpers@1.0.1:
-    resolution: {integrity: sha512-BhYE+WDaywFg2TBWYNXAE+8B1ATnThNBqXHP5nQu0jWJdVvY2hvkpyB3qOmtmDePiS5/BDQ8wASEWGMWRG148g==}
+  call-bind-apply-helpers@1.0.2:
+    resolution: {integrity: sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==}
     engines: {node: '>= 0.4'}
 
   call-bind@1.0.8:
@@ -1143,8 +1146,8 @@ packages:
     resolution: {integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==}
     engines: {node: '>=6'}
 
-  camera-controls@2.9.0:
-    resolution: {integrity: sha512-TpCujnP0vqPppTXXJRYpvIy0xq9Tro6jQf2iYUxlDpPCNxkvE/XGaTuwIxnhINOkVP/ob2CRYXtY3iVYXeMEzA==}
+  camera-controls@2.10.0:
+    resolution: {integrity: sha512-vBQ5Daxv4KRsn07U/VqkPxoqD8U+S++0oq5NLf4HevMuh/BDta3rg49e/P564AMzFPBePQeXDKOkiIezRgyDwg==}
     peerDependencies:
       three: '>=0.126.1'
 
@@ -1351,8 +1354,9 @@ packages:
     resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
     engines: {node: '>= 0.4'}
 
-  es-shim-unscopables@1.0.2:
-    resolution: {integrity: sha512-J3yBRXCzDu4ULnQwxyToo/OjdMx6akgVC7K6few0a7F/0wLtmKKN7I73AH5T2836UuXRqN7Qg+IIUw/+YJksRw==}
+  es-shim-unscopables@1.1.0:
+    resolution: {integrity: sha512-d9T8ucsEhh8Bi1woXCf+TIKDIROLG5WCkxg8geBCbvk22kzwC5G2OnXVMO6FUsvQlgUUXQ2itephWDLqDzbeCw==}
+    engines: {node: '>= 0.4'}
 
   es-to-primitive@1.3.0:
     resolution: {integrity: sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==}
@@ -1574,8 +1578,8 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
-  globals@15.14.0:
-    resolution: {integrity: sha512-OkToC372DtlQeje9/zHIo5CT8lRP/FUgEOKBEhU4e0abL7J7CD24fD9ohiLN5hagG/kWCYj4K5oaxxtj2Z0Dig==}
+  globals@15.15.0:
+    resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==}
     engines: {node: '>=18'}
 
   globalthis@1.0.4:
@@ -2239,6 +2243,12 @@ packages:
     peerDependencies:
       react: '>=16.8'
 
+  react-toastify@9.1.3:
+    resolution: {integrity: sha512-fPfb8ghtn/XMxw3LkxQBk3IyagNpF/LIKjOBflbexr2AWxAH1MJgvnESwEwBn9liLFXgTKWgBSdZpw9m4OTHTg==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+
   react-use-measure@2.1.7:
     resolution: {integrity: sha512-KrvcAo13I/60HpwGO5jpW7E9DfusKyLPLvuHlUyP5zqnmAPhNc6qTRjUQrdTADl0lpPpDVU2/Gg51UlOGHXbdg==}
     peerDependencies:
@@ -2477,8 +2487,8 @@ packages:
     peerDependencies:
       react: '>=17.0'
 
-  swiper@11.2.2:
-    resolution: {integrity: sha512-FmAN6zACpVUbd/1prO9xQ9gKo9cc6RE2UKU/z4oXtS8fNyX4sdOW/HHT/e444WucLJs0jeMId6WjdWM2Lrs8zA==}
+  swiper@11.2.3:
+    resolution: {integrity: sha512-24m5tqHCd1Wmp9+86aKDoIGMsZGEjIL++3nuB1UjhAhIlvwj4k0Jikxu9PGQ/VswLpoje6JtMDWo12uu4aS2FA==}
     engines: {node: '>= 4.7.0'}
 
   tailwind-merge@3.0.1:
@@ -2686,8 +2696,8 @@ packages:
       react:
         optional: true
 
-  viem@2.23.1:
-    resolution: {integrity: sha512-c5AyJCTA5LeNI/KCu++vkbqbh7irYjUSHxLIAHPKJ6IEcBNMt8+7sPG7gjMXpqVWnqPMzaW9CA2n+yUsKWttDA==}
+  viem@2.23.2:
+    resolution: {integrity: sha512-NVmW/E0c5crMOtbEAqMF0e3NmvQykFXhLOc/CkLIXOlzHSA6KXVz3CYVmaKqBF8/xtjsjHAGjdJN3Ru1kFJLaA==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
@@ -3399,7 +3409,7 @@ snapshots:
       '@react-spring/three': 9.7.5(@react-three/fiber@8.17.14(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.173.0))(react@18.3.1)(three@0.173.0)
       '@react-three/fiber': 8.17.14(@types/react@19.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.173.0)
       '@use-gesture/react': 10.3.1(react@18.3.1)
-      camera-controls: 2.9.0(three@0.173.0)
+      camera-controls: 2.10.0(three@0.173.0)
       cross-env: 7.0.3
       detect-gpu: 5.0.68
       glsl-noise: 0.0.0
@@ -3496,7 +3506,7 @@ snapshots:
     dependencies:
       big.js: 6.2.2
       dayjs: 1.11.10
-      viem: 2.23.1(zod@3.22.4)
+      viem: 2.23.2(zod@3.22.4)
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -3509,7 +3519,7 @@ snapshots:
       '@reown/appkit-wallet': 1.6.8
       '@walletconnect/universal-provider': 2.18.0
       valtio: 1.13.2(@types/react@19.0.8)(react@18.3.1)
-      viem: 2.23.1(zod@3.22.4)
+      viem: 2.23.2(zod@3.22.4)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -3591,7 +3601,7 @@ snapshots:
       '@walletconnect/logger': 2.1.2
       '@walletconnect/universal-provider': 2.18.0
       valtio: 1.13.2(@types/react@19.0.8)(react@18.3.1)
-      viem: 2.23.1(zod@3.22.4)
+      viem: 2.23.2(zod@3.22.4)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -3644,7 +3654,7 @@ snapshots:
       '@walletconnect/utils': 2.18.0
       bs58: 6.0.0
       valtio: 1.13.2(@types/react@19.0.8)(react@18.3.1)
-      viem: 2.23.1(zod@3.22.4)
+      viem: 2.23.2(zod@3.22.4)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -4180,21 +4190,21 @@ snapshots:
       es-abstract: 1.23.9
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
-      es-shim-unscopables: 1.0.2
+      es-shim-unscopables: 1.1.0
 
   array.prototype.flat@1.3.3:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
       es-abstract: 1.23.9
-      es-shim-unscopables: 1.0.2
+      es-shim-unscopables: 1.1.0
 
   array.prototype.flatmap@1.3.3:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
       es-abstract: 1.23.9
-      es-shim-unscopables: 1.0.2
+      es-shim-unscopables: 1.1.0
 
   array.prototype.tosorted@1.1.4:
     dependencies:
@@ -4202,7 +4212,7 @@ snapshots:
       define-properties: 1.2.1
       es-abstract: 1.23.9
       es-errors: 1.3.0
-      es-shim-unscopables: 1.0.2
+      es-shim-unscopables: 1.1.0
 
   arraybuffer.prototype.slice@1.0.4:
     dependencies:
@@ -4281,21 +4291,21 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  call-bind-apply-helpers@1.0.1:
+  call-bind-apply-helpers@1.0.2:
     dependencies:
       es-errors: 1.3.0
       function-bind: 1.1.2
 
   call-bind@1.0.8:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
       get-intrinsic: 1.2.7
       set-function-length: 1.2.2
 
   call-bound@1.0.3:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       get-intrinsic: 1.2.7
 
   callsites@3.1.0: {}
@@ -4304,7 +4314,7 @@ snapshots:
 
   camelcase@5.3.1: {}
 
-  camera-controls@2.9.0(three@0.173.0):
+  camera-controls@2.10.0(three@0.173.0):
     dependencies:
       three: 0.173.0
 
@@ -4337,8 +4347,7 @@ snapshots:
       strip-ansi: 6.0.1
       wrap-ansi: 6.2.0
 
-  clsx@1.2.1:
-    optional: true
+  clsx@1.2.1: {}
 
   clsx@2.1.1: {}
 
@@ -4452,7 +4461,7 @@ snapshots:
 
   dunder-proto@1.0.1:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       es-errors: 1.3.0
       gopd: 1.2.0
 
@@ -4585,7 +4594,7 @@ snapshots:
       has-tostringtag: 1.0.2
       hasown: 2.0.2
 
-  es-shim-unscopables@1.0.2:
+  es-shim-unscopables@1.1.0:
     dependencies:
       hasown: 2.0.2
 
@@ -4835,7 +4844,7 @@ snapshots:
 
   get-intrinsic@1.2.7:
     dependencies:
-      call-bind-apply-helpers: 1.0.1
+      call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
@@ -4878,7 +4887,7 @@ snapshots:
 
   globals@14.0.0: {}
 
-  globals@15.14.0: {}
+  globals@15.15.0: {}
 
   globalthis@1.0.4:
     dependencies:
@@ -5525,6 +5534,12 @@ snapshots:
       '@remix-run/router': 1.22.0
       react: 18.3.1
 
+  react-toastify@9.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      clsx: 1.2.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   react-use-measure@2.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -5828,7 +5843,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  swiper@11.2.2: {}
+  swiper@11.2.3: {}
 
   tailwind-merge@3.0.1: {}
 
@@ -6025,7 +6040,7 @@ snapshots:
       '@types/react': 19.0.8
       react: 18.3.1
 
-  viem@2.23.1(zod@3.22.4):
+  viem@2.23.2(zod@3.22.4):
     dependencies:
       '@noble/curves': 1.8.1
       '@noble/hashes': 1.7.1
