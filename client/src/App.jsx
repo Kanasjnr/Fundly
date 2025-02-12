@@ -1,31 +1,23 @@
 import "./config/connection";
+import React from 'react'
 
-import React from "react"
-import Header from "./components/Header"
-import Hero from "./components/Hero"
-import Features from "./components/Features"
-import HowItWorks from "./components/HowItWorks"
-import Testimonials from "./components/Testimonials"
-import Stats from "./components/Stats"
-import CTA from "./components/CTA"
-import Footer from "./components/Footer"
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
+import { SidebarProvider } from './components/SidebarProvider'
+import DashboardPage from './pages/DashboardPage'
+import LandingPage from './pages/LandingPage'
 
 function App() {
   return (
-    <div className="min-h-screen bg-white text-gray-800 relative">
-      <Header position={"sticky"} zIndex={9999} top={0}/>
-      <main>
-        <Hero />
-        <Features />
-        <HowItWorks />
-        <Testimonials />
-        <Stats />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <SidebarProvider>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard/*" element={<DashboardPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </SidebarProvider>
+    </Router>
   )
 }
 
 export default App
-

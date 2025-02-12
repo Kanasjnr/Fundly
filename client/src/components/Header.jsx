@@ -2,10 +2,16 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import useSignerOrProvider from "../hooks/useSignerOrProvider"; 
+
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { signer } = useSignerOrProvider(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +20,12 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (signer) {
+      navigate("/dashboard"); 
+    }
+  }, [signer, navigate]);
 
   const navItems = [
     { href: "#features", text: "Features" },
