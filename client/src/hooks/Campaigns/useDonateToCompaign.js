@@ -4,16 +4,16 @@ import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
 import { ethers } from "ethers"
 import { useAppKitAccount } from "@reown/appkit/react"
-import useSignerOrProvider from "./useSignerOrProvider"
-import useContract from "./useContract"
-import FundlyABI from "../abis/Fundly.json"
+import useSignerOrProvider from "../useSignerOrProvider"
+import useContract from "../useContract"
+import FundlyABI from "../../abis/Fundly.json"
 
 const useDonateToCompaign = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const { address, isConnected } = useAppKitAccount()
   const { signer } = useSignerOrProvider()
-  const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_ADDRESS
+  const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_CONTRACT_ADDRESS
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
   const donateToCampaign = useCallback(

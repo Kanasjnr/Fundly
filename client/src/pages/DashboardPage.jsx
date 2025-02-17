@@ -3,17 +3,19 @@ import React from "react"
 
 import { Sidebar } from "../components/Sidebar"
 import { DashboardHeader } from "../components/DashboardHeader"
-// import DashboardContent from "../components/Dashboard/DashboardContent"
-// import CampaignListing from "../components/Dashboard/CampaignListing"
-// import CampaignDetails from "../components/Dashboard/CampaignDetails"
-// import FundingOverview from "../components/Dashboard/FundingOverview"
-// import BackerManagement from "../components/Dashboard/BackerManagement"
-// import RewardManagement from "../components/Dashboard/RewardManagement"
-// import ReportGeneration from "../components/Dashboard/ReportGeneration"
-// import { KYCStatus } from "../components/KYC/KYCStatus"
-// import { KYCSubmissionForm } from "../components/KYC/KYCSubmissionForm"
-// import { KYCVerificationList } from "../components/KYC/KYCVerificationList"
-// import Notifications from "../components/Dashboard/Notifications"
+import DashboardContent from "../components/DashboardContent"
+import CampaignListing from "../components/CampaignListing"
+import CampaignDetails from "../components/CampaignDetails"
+import Donations from "../components/Donations"
+import Governance from "../components/Governance"
+import NFTs from "../components/NFTs"
+import KYCVerification from "../components/KYCVerification"
+import CreateCampaign from "../components/CreateCampaign"
+import { KYCStatus } from "../components/KYCStatus"
+import { KYCSubmissionForm } from "../components/KYCSubmissionForm"
+import { KYCVerificationList } from "../components/KYCVerificationList"
+
+
 
 function DashboardPage() {
   return (
@@ -24,20 +26,21 @@ function DashboardPage() {
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-100">
           <div className="max-w-7xl mx-auto">
             <Routes>
-              {/* <Route path="/" element={<DashboardContent />} />
+              <Route path="/" element={<DashboardContent />} />
               <Route path="/campaigns" element={<CampaignListing />} />
+              <Route path="/create-campaign" element={<CreateCampaign />} />
+
               <Route path="/campaigns/:id" element={<CampaignDetails />} />
-              <Route path="/funding" element={<FundingOverview />} />
-              <Route path="/backers" element={<BackerManagement />} />
-              <Route path="/rewards" element={<RewardManagement />} />
-              <Route path="/reports" element={<ReportGeneration />} /> */}
+              <Route path="/donations" element={<Donations />} />
+              <Route path="/governance" element={<Governance />} />
+              <Route path="/nfts" element={<NFTs />} />
               <Route
                 path="/kyc"
                 element={
                   <div className="space-y-8">
-                    {/* <KYCStatus />
+                    <KYCStatus />
                     <KYCSubmissionForm />
-                    <KYCVerificationList /> */}
+                    <KYCVerificationList />
                   </div>
                 }
               />

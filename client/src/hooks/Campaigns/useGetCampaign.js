@@ -2,13 +2,13 @@
 
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
-import useContract from "./useContract"
-import FundlyABI from "../abis/Fundly.json"
+import useContract from "../useContract"
+import FundlyABI from "../../abis/Fundly.json"
 
 const useGetCampaign = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_ADDRESS
+  const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_CONTRACT_ADDRESS
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
   const getCampaign = useCallback(
@@ -34,6 +34,9 @@ const useGetCampaign = () => {
           donators: campaignData[7],
           donations: campaignData[8],
           paidOut: campaignData[9],
+          milestones: campaignData[10],
+          currentMilestone: campaignData[11],
+          status: campaignData[12], // Added status field
         }
       } catch (err) {
         console.error("Error fetching campaign:", err)
@@ -51,4 +54,3 @@ const useGetCampaign = () => {
 }
 
 export default useGetCampaign
-

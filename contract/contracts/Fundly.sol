@@ -2,9 +2,31 @@
 pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./KYCManager.sol";
 
-contract Fundly is ERC721 {
+contract Fundly is ERC721URIStorage, AccessControl {
+    using Strings for uint256;
+
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    uint256 public constant MINIMUM_CAMPAIGN_DURATION = 1 days;
+    uint256 public constant MAXIMUM_CAMPAIGN_DURATION = 90 days;
+    uint256 public constant MINIMUM_TARGET_AMOUNT = 0.1 ether;
+    uint256 public constant MAXIMUM_MILESTONES = 10;
+
+    enum CampaignStatus {
+        Active,
+        Successful,
+        Failed,
+        Paid
+    }
+    enum ProposalType {
+        FundAllocation,
+        MilestoneAdjustment
+    }
+
     struct Campaign {
         address owner;
         string title;
@@ -16,6 +38,9 @@ contract Fundly is ERC721 {
         address[] donators;
         uint256[] donations;
         bool paidOut;
+        uint256[] milestones;
+        uint256 currentMilestone;
+        CampaignStatus status;
     }
 
     struct Proposal {
@@ -26,29 +51,122 @@ contract Fundly is ERC721 {
         bool executed;
         uint256 endTime;
         uint256 totalVotes;
+        uint256 campaignId;
+        ProposalType proposalType;
+        uint256 createdAt;
+        address creator;
     }
 
-    KYCManager public kycManager;
-    Campaign[] public campaigns;
+    struct UserStats {
+        uint256 campaignsCreated;
+        uint256 campaignsBacked;
+        uint256 proposalsCreated;
+        uint256 proposalsVoted;
+        uint256 totalDonated;
+        uint256 reputationScore;
+        uint256 reputationTier;
+        uint256 lastActivityTimestamp;
+    }
+
+    KYCManager public immutable kycManager;
+    Campaign[] private campaigns;
     uint256 public proposalCount;
-    uint256 public quorumVotes;
-    uint256 private _tokenIds;
+    uint256 public immutable quorumVotes;
+    uint256 private _nextTokenId;
 
     mapping(uint256 => Proposal) public proposals;
     mapping(address => mapping(uint256 => bool)) public hasVoted;
     mapping(address => uint256[]) private _userCampaigns;
+    mapping(address => UserStats) public userStats;
+    mapping(uint256 => mapping(address => uint256)) private _campaignDonations;
 
-    event CampaignCreated(uint256 indexed campaignId, address indexed owner, string title);
-    event DonationMade(uint256 indexed campaignId, address indexed donator, uint256 amount);
-    event CampaignPaidOut(uint256 indexed campaignId, address indexed owner, uint256 amount);
-    event ProposalCreated(uint256 indexed proposalId, string description, uint256 endTime);
-    event Voted(uint256 indexed proposalId, address indexed voter, bool support, uint256 votes);
-    event ProposalExecuted(uint256 indexed proposalId);
+    event CampaignCreated(
+        uint256 indexed campaignId,
+        address indexed owner,
+        string title,
+        uint256 target,
+        uint256 deadline
+    );
+    event DonationMade(
+        uint256 indexed campaignId,
+        address indexed donator,
+        uint256 amount,
+        uint256 tokenId
+    );
+    event CampaignPaidOut(
+        uint256 indexed campaignId,
+        address indexed owner,
+        uint256 amount
+    );
+    event ProposalCreated(
+        uint256 indexed proposalId,
+        address indexed creator,
+        string description,
+        uint256 endTime,
+        uint256 campaignId
+    );
+    event Voted(
+        uint256 indexed proposalId,
+        address indexed voter,
+        bool support,
+        uint256 votes
+    );
+    event ProposalExecuted(uint256 indexed proposalId, bool success);
+    event MilestoneUpdated(
+        uint256 indexed campaignId,
+        uint256 milestoneIndex,
+        uint256 newValue
+    );
+    event ReputationUpdated(
+        address indexed user,
+        uint256 newScore,
+        uint256 newTier
+    );
+    event CampaignStatusChanged(
+        uint256 indexed campaignId,
+        CampaignStatus newStatus
+    );
 
-    constructor(address _kycManager, uint256 _quorumVotes) ERC721("FundlyCampaignNFT", "FCN") {
-        require(_quorumVotes > 0, "Quorum votes must be greater than 0");
+    error InvalidAddress();
+    error InvalidAmount();
+    error InvalidDuration();
+    error InvalidKYC();
+    error DeadlinePassed();
+    error CampaignNotFound();
+    error AlreadyVoted();
+    error ProposalNotFound();
+    error QuorumNotReached();
+    error ProposalNotPassed();
+    error TransferFailed();
+    error Unauthorized();
+    error InvalidMilestoneCount();
+
+    modifier validAddress(address _address) {
+        if (_address == address(0)) revert InvalidAddress();
+        _;
+    }
+
+    modifier campaignExists(uint256 _id) {
+        if (_id >= campaigns.length) revert CampaignNotFound();
+        _;
+    }
+
+    modifier onlyKYCVerified() {
+        if (!kycManager.isUserVerified(msg.sender)) revert InvalidKYC();
+        _;
+    }
+
+    constructor(
+        address _kycManager,
+        uint256 _quorumVotes
+    ) ERC721("FundlyCampaignNFT", "FCN") validAddress(_kycManager) {
+        if (_quorumVotes == 0) revert InvalidAmount();
+
         kycManager = KYCManager(_kycManager);
         quorumVotes = _quorumVotes;
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
     }
 
     function createCampaign(
@@ -56,10 +174,15 @@ contract Fundly is ERC721 {
         string memory _description,
         uint256 _target,
         uint256 _deadline,
-        string memory _image
-    ) public returns (uint256) {
-        require(kycManager.isUserVerified(msg.sender), "User is not KYC verified");
-        require(_deadline > block.timestamp, "Deadline should be in the future");
+        string memory _image,
+        uint256[] memory _milestones
+    ) public onlyKYCVerified returns (uint256) {
+        if (_target < MINIMUM_TARGET_AMOUNT) revert InvalidAmount();
+        if (_deadline <= block.timestamp) revert DeadlinePassed();
+        if (_deadline > block.timestamp + MAXIMUM_CAMPAIGN_DURATION)
+            revert InvalidDuration();
+        if (_milestones.length > MAXIMUM_MILESTONES)
+            revert InvalidMilestoneCount();
 
         Campaign memory newCampaign = Campaign({
             owner: msg.sender,
@@ -71,82 +194,91 @@ contract Fundly is ERC721 {
             image: _image,
             donators: new address[](0),
             donations: new uint256[](0),
-            paidOut: false
+            paidOut: false,
+            milestones: _milestones,
+            currentMilestone: 0,
+            status: CampaignStatus.Active
         });
 
         campaigns.push(newCampaign);
         uint256 campaignId = campaigns.length - 1;
         _userCampaigns[msg.sender].push(campaignId);
-        emit CampaignCreated(campaignId, msg.sender, _title);
+
+        UserStats storage stats = userStats[msg.sender];
+        stats.campaignsCreated++;
+        stats.lastActivityTimestamp = block.timestamp;
+        updateReputation(msg.sender, 20);
+
+        emit CampaignCreated(
+            campaignId,
+            msg.sender,
+            _title,
+            _target,
+            _deadline
+        );
         return campaignId;
     }
 
-    function donateCampaign(uint256 _id) public payable {
-        require(_id < campaigns.length, "Invalid campaign ID");
-        uint256 amount = msg.value;
+    function donateCampaign(uint256 _id) public payable campaignExists(_id) {
         Campaign storage campaign = campaigns[_id];
 
+        if (block.timestamp > campaign.deadline) revert DeadlinePassed();
+        if (msg.value == 0) revert InvalidAmount();
+        if (campaign.status != CampaignStatus.Active) revert Unauthorized();
+
+        campaign.amountCollected += msg.value;
         campaign.donators.push(msg.sender);
-        campaign.donations.push(amount);
-        campaign.amountCollected += amount;
+        campaign.donations.push(msg.value);
+        _campaignDonations[_id][msg.sender] += msg.value;
 
-        _tokenIds++;
-        _safeMint(msg.sender, _tokenIds);
+        uint256 newTokenId = _nextTokenId++;
+        _safeMint(msg.sender, newTokenId);
 
-        emit DonationMade(_id, msg.sender, amount);
+        string memory tokenURI = generateTokenURI(_id, msg.value);
+        _setTokenURI(newTokenId, tokenURI);
+
+        UserStats storage stats = userStats[msg.sender];
+        stats.campaignsBacked++;
+        stats.totalDonated += msg.value;
+        stats.lastActivityTimestamp = block.timestamp;
+        updateReputation(msg.sender, 10);
+
+        if (campaign.amountCollected >= campaign.target) {
+            campaign.status = CampaignStatus.Successful;
+            emit CampaignStatusChanged(_id, CampaignStatus.Successful);
+        }
+
+        emit DonationMade(_id, msg.sender, msg.value, newTokenId);
     }
 
-    function getCampaigns() public view returns (Campaign[] memory) {
-        return campaigns;
-    }
-
-    function getCampaign(uint256 _id) public view returns (
-        address owner,
-        string memory title,
-        string memory description,
-        uint256 target,
-        uint256 deadline,
-        uint256 amountCollected,
-        string memory image,
-        address[] memory donators,
-        uint256[] memory donations,
-        bool paidOut
-    ) {
-        require(_id < campaigns.length, "Invalid campaign ID");
+    function withdrawCampaignFunds(uint256 _id) public campaignExists(_id) {
         Campaign storage campaign = campaigns[_id];
-        return (
-            campaign.owner,
-            campaign.title,
-            campaign.description,
-            campaign.target,
-            campaign.deadline,
-            campaign.amountCollected,
-            campaign.image,
-            campaign.donators,
-            campaign.donations,
-            campaign.paidOut
-        );
-    }
 
-    function getCampaignsByOwner(address owner) public view returns (uint256[] memory) {
-        return _userCampaigns[owner];
-    }
-
-    function payoutCampaign(uint256 _id) public {
-        require(_id < campaigns.length, "Invalid campaign ID");
-        Campaign storage campaign = campaigns[_id];
-        require(msg.sender == campaign.owner, "Only the campaign owner can withdraw funds");
-        require(!campaign.paidOut, "Funds already withdrawn");
-        require(campaign.amountCollected >= campaign.target, "Target not reached");
+        if (msg.sender != campaign.owner) revert Unauthorized();
+        if (campaign.status != CampaignStatus.Successful) revert Unauthorized();
+        if (campaign.paidOut) revert Unauthorized();
 
         campaign.paidOut = true;
-        payable(campaign.owner).transfer(campaign.amountCollected);
+        campaign.status = CampaignStatus.Paid;
+
+        (bool success, ) = campaign.owner.call{value: campaign.amountCollected}(
+            ""
+        );
+        if (!success) revert TransferFailed();
 
         emit CampaignPaidOut(_id, campaign.owner, campaign.amountCollected);
+        emit CampaignStatusChanged(_id, CampaignStatus.Paid);
     }
 
-    function createProposal(string memory description, uint256 votingPeriod) public {
-        require(kycManager.isUserVerified(msg.sender), "User is not KYC verified");
+    function createProposal(
+        uint256 campaignId,
+        string memory description,
+        uint256 votingPeriod,
+        ProposalType proposalType
+    ) public onlyKYCVerified campaignExists(campaignId) {
+        if (votingPeriod < 1 days || votingPeriod > 7 days)
+            revert InvalidDuration();
+
         proposalCount++;
         proposals[proposalCount] = Proposal({
             id: proposalCount,
@@ -155,20 +287,39 @@ contract Fundly is ERC721 {
             againstVotes: 0,
             executed: false,
             endTime: block.timestamp + votingPeriod,
-            totalVotes: 0
+            totalVotes: 0,
+            campaignId: campaignId,
+            proposalType: proposalType,
+            createdAt: block.timestamp,
+            creator: msg.sender
         });
 
-        emit ProposalCreated(proposalCount, description, block.timestamp + votingPeriod);
+        UserStats storage stats = userStats[msg.sender];
+        stats.proposalsCreated++;
+        stats.lastActivityTimestamp = block.timestamp;
+        updateReputation(msg.sender, 5);
+
+        emit ProposalCreated(
+            proposalCount,
+            msg.sender,
+            description,
+            block.timestamp + votingPeriod,
+            campaignId
+        );
     }
 
-    function voteOnProposal(uint256 proposalId, bool support) public {
-        require(kycManager.isUserVerified(msg.sender), "User is not KYC verified");
-        require(!hasVoted[msg.sender][proposalId], "Already voted");
-        require(!proposals[proposalId].executed, "Proposal already executed");
-        require(block.timestamp <= proposals[proposalId].endTime, "Voting period has ended");
-
-        uint256 votes = msg.sender.balance;
+    function voteOnProposal(
+        uint256 proposalId,
+        bool support
+    ) public onlyKYCVerified {
         Proposal storage proposal = proposals[proposalId];
+        if (proposal.id == 0) revert ProposalNotFound();
+        if (hasVoted[msg.sender][proposalId]) revert AlreadyVoted();
+        if (proposal.executed) revert Unauthorized();
+        if (block.timestamp > proposal.endTime) revert DeadlinePassed();
+
+        uint256 votes = balanceOf(msg.sender);
+        if (votes == 0) revert Unauthorized();
 
         if (support) {
             proposal.forVotes += votes;
@@ -179,54 +330,155 @@ contract Fundly is ERC721 {
         proposal.totalVotes += votes;
         hasVoted[msg.sender][proposalId] = true;
 
+        UserStats storage stats = userStats[msg.sender];
+        stats.proposalsVoted++;
+        stats.lastActivityTimestamp = block.timestamp;
+        updateReputation(msg.sender, 2);
+
         emit Voted(proposalId, msg.sender, support, votes);
     }
 
     function executeProposal(uint256 proposalId) public {
         Proposal storage proposal = proposals[proposalId];
-        require(!proposal.executed, "Proposal already executed");
-        require(block.timestamp > proposal.endTime, "Voting period not ended");
-        require(proposal.totalVotes >= quorumVotes, "Quorum not reached");
-        require(proposal.forVotes > proposal.againstVotes, "Proposal did not pass");
+        if (proposal.id == 0) revert ProposalNotFound();
+        if (proposal.executed) revert Unauthorized();
+        if (block.timestamp <= proposal.endTime) revert DeadlinePassed();
+        if (proposal.totalVotes < quorumVotes) revert QuorumNotReached();
+        if (proposal.forVotes <= proposal.againstVotes)
+            revert ProposalNotPassed();
 
         proposal.executed = true;
-        // Implement the logic to execute the proposal
-        
-        emit ProposalExecuted(proposalId);
+        bool success = true;
+
+        if (proposal.proposalType == ProposalType.MilestoneAdjustment) {
+            // Implementation for milestone adjustment
+            success = _executeMilestoneAdjustment(proposal);
+        }
+
+        emit ProposalExecuted(proposalId, success);
     }
 
-    function getProposalDetails(uint256 proposalId) public view returns (
-        uint256 id,
-        string memory description,
-        uint256 forVotes,
-        uint256 againstVotes,
-        bool executed,
-        uint256 endTime,
-        uint256 totalVotes,
-        bool quorumReached,
-        bool passed
-    ) {
-        require(proposalId > 0 && proposalId <= proposalCount, "Invalid proposal ID");
-        
-        Proposal storage proposal = proposals[proposalId];
-        
+    function _executeMilestoneAdjustment(
+        Proposal storage proposal
+    ) private returns (bool) {
+        // Implementation for milestone adjustment
+        return true;
+    }
+
+    function updateMilestone(
+        uint256 campaignId,
+        uint256 milestoneIndex,
+        uint256 newValue
+    ) public campaignExists(campaignId) {
+        Campaign storage campaign = campaigns[campaignId];
+        if (msg.sender != campaign.owner) revert Unauthorized();
+        if (milestoneIndex >= campaign.milestones.length)
+            revert InvalidMilestoneCount();
+
+        campaign.milestones[milestoneIndex] = newValue;
+        emit MilestoneUpdated(campaignId, milestoneIndex, newValue);
+    }
+
+    function updateReputation(address user, uint256 points) internal {
+        UserStats storage stats = userStats[user];
+        stats.reputationScore += points;
+
+        uint256 newTier;
+        if (stats.reputationScore < 100) {
+            newTier = 1;
+        } else if (stats.reputationScore < 500) {
+            newTier = 2;
+        } else {
+            newTier = 3;
+        }
+
+        if (newTier != stats.reputationTier) {
+            stats.reputationTier = newTier;
+            emit ReputationUpdated(user, stats.reputationScore, newTier);
+        }
+    }
+
+    // View Functions
+    function getAllCampaigns() public view returns (Campaign[] memory) {
+        return campaigns;
+    }
+
+    function getAllProposals() public view returns (Proposal[] memory) {
+        Proposal[] memory allProposals = new Proposal[](proposalCount);
+        for (uint256 i = 1; i <= proposalCount; i++) {
+            allProposals[i - 1] = proposals[i];
+        }
+        return allProposals;
+    }
+
+    function getCampaignFundFlow(
+        uint256 campaignId
+    )
+        public
+        view
+        campaignExists(campaignId)
+        returns (uint256[] memory, uint256[] memory)
+    {
         return (
-            proposal.id,
-            proposal.description,
-            proposal.forVotes,
-            proposal.againstVotes,
-            proposal.executed,
-            proposal.endTime,
-            proposal.totalVotes,
-            proposal.totalVotes >= quorumVotes,
-            proposal.forVotes > proposal.againstVotes
+            campaigns[campaignId].donations,
+            campaigns[campaignId].milestones
         );
     }
 
-    function updateQuorumVotes(uint256 newQuorumVotes) public {
-        // This function should ideally be controlled by governance
-        // For now, we'll leave it open, but in production, add access control
-        require(newQuorumVotes > 0, "Quorum votes must be greater than 0");
-        quorumVotes = newQuorumVotes;
+    function getCampaignAnalytics(
+        uint256 campaignId
+    )
+        public
+        view
+        campaignExists(campaignId)
+        returns (
+            uint256 totalBackers,
+            uint256 fundingProgress,
+            uint256 timeRemaining,
+            uint256 currentMilestone
+        )
+    {
+        Campaign storage campaign = campaigns[campaignId];
+
+        totalBackers = campaign.donators.length;
+        fundingProgress = (campaign.amountCollected * 100) / campaign.target;
+        timeRemaining = campaign.deadline > block.timestamp
+            ? campaign.deadline - block.timestamp
+            : 0;
+        currentMilestone = campaign.currentMilestone;
+    }
+
+    function getUserStats(
+        address user
+    ) public view validAddress(user) returns (UserStats memory) {
+        return userStats[user];
+    }
+
+    function getUserCampaigns(
+        address user
+    ) public view validAddress(user) returns (uint256[] memory) {
+        return _userCampaigns[user];
+    }
+
+    function generateTokenURI(
+        uint256 campaignId,
+        uint256 amount
+    ) internal pure returns (string memory) {
+        return
+            string(
+                abi.encodePacked(
+                    "https://api.fundly.com/nft/",
+                    campaignId.toString(),
+                    "/",
+                    amount.toString()
+                )
+            );
+    }
+
+    // Override required function
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721URIStorage, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 }
