@@ -191,7 +191,7 @@ const CreateCampaign = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <Label htmlFor="target" className="text-lg font-semibold">
-                    Funding Target (ETH)
+                    Funding Target (XFI)
                   </Label>
                   <div className="relative">
                     <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />

@@ -6,10 +6,8 @@ import { DashboardHeader } from "../components/DashboardHeader"
 import DashboardContent from "../components/DashboardContent"
 import CampaignListing from "../components/CampaignListing"
 import CampaignDetails from "../components/CampaignDetails"
-import Donations from "../components/Donations"
 import Governance from "../components/Governance"
 import NFTs from "../components/NFTs"
-import KYCVerification from "../components/KYCVerification"
 import CreateCampaign from "../components/CreateCampaign"
 import { KYCStatus } from "../components/KYCStatus"
 import { KYCSubmissionForm } from "../components/KYCSubmissionForm"
@@ -31,7 +29,6 @@ function DashboardPage() {
               <Route path="/create-campaign" element={<CreateCampaign />} />
 
               <Route path="/campaigns/:id" element={<CampaignDetails />} />
-              <Route path="/donations" element={<Donations />} />
               <Route path="/governance" element={<Governance />} />
               <Route path="/nfts" element={<NFTs />} />
               <Route

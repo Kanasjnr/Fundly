@@ -403,6 +403,12 @@ contract Fundly is ERC721URIStorage, AccessControl {
         return campaigns;
     }
 
+    function getCampaign(
+        uint256 campaignId
+    ) public view campaignExists(campaignId) returns (Campaign memory) {
+        return campaigns[campaignId];
+    }
+
     function getAllProposals() public view returns (Proposal[] memory) {
         Proposal[] memory allProposals = new Proposal[](proposalCount);
         for (uint256 i = 1; i <= proposalCount; i++) {
