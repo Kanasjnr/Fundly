@@ -3,20 +3,20 @@
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
 import { useAppKitAccount } from "@reown/appkit/react"
-import useSignerOrProvider from "./useSignerOrProvider"
-import useContract from "./useContract"
-import FundlyABI from "../abis/Fundly.json"
+import useSignerOrProvider from "../useSignerOrProvider"
+import useContract from "../useContract"
+import FundlyABI from "../../abis/Fundly.json"
 
-const useExecuteProposal = () => {
+const useCreateProposal = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const { address, isConnected } = useAppKitAccount()
   const { signer } = useSignerOrProvider()
-  const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_ADDRESS
+  const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_CONTRACT_ADDRESS
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
-  const executeProposal = useCallback(
-    async (proposalId) => {
+  const createProposal = useCallback(
+    async (campaignId, description, votingPeriod, proposalType) => {
       if (!address || !isConnected) {
         toast.error("Please connect your wallet")
         return false
@@ -31,18 +31,18 @@ const useExecuteProposal = () => {
       setError(null)
 
       try {
-        const tx = await contract.executeProposal(proposalId)
+        const tx = await contract.createProposal(campaignId, description, votingPeriod, proposalType)
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
-          toast.success("Proposal executed successfully!")
+          toast.success("Proposal created successfully!")
           return true
         } else {
           throw new Error("Transaction failed")
         }
       } catch (err) {
         console.error("Transaction error:", err)
-        setError("Error executing proposal: " + (err.message || "Unknown error"))
+        setError("Error creating proposal: " + (err.message || "Unknown error"))
         toast.error(`Error: ${err.message || "An unknown error occurred."}`)
         return false
       } finally {
@@ -52,8 +52,8 @@ const useExecuteProposal = () => {
     [address, isConnected, signer, contract],
   )
 
-  return { executeProposal, loading, error }
+  return { createProposal, loading, error }
 }
 
-export default useExecuteProposal
+export default useCreateProposal
 

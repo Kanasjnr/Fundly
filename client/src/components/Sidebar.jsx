@@ -4,12 +4,11 @@ import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "../lib/utils"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, Rocket, Coins, UserCheck, Vote, Image, Menu } from 'lucide-react'
+import { LayoutDashboard, Rocket, UserCheck, Vote, Image, Menu } from 'lucide-react'
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Rocket, label: "Campaigns", path: "/dashboard/campaigns" },
-  { icon: Coins, label: "Donations", path: "/dashboard/donations" },
   { icon: Vote, label: "Governance", path: "/dashboard/governance" },
   { icon: UserCheck, label: "KYC Verification", path: "/dashboard/kyc" },
   { icon: Image, label: "My NFTs", path: "/dashboard/nfts" },
