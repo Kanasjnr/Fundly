@@ -2,7 +2,7 @@
 import React from "react"
 
 import { useState } from "react"
-import { Sidebar } from "./Sidebar"
+import { Sidebar } from "../Sidebar"
 import { Header } from "./Header"
 import DashboardContent from "./DashboardContent"
 import CampaignManagement from "./CampaignManagement"

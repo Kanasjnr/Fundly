@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { Wallet, Loader2, AlertCircle } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card"
-import { Alert, AlertDescription } from "../components/ui/alert"
-import useWithdrawCampaignFunds from "../hooks/Campaigns/useWithdrawCampaignFunds"
+import { Button } from "../ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../ui/card"
+import { Alert, AlertDescription } from "../ui/alert"
+import useWithdrawCampaignFunds from "../../hooks/Campaigns/useWithdrawCampaignFunds"
 import { useAppKitAccount } from "@reown/appkit/react"
 
 const CampaignWithdrawal = ({ campaignId, campaignOwner, isEnded, isSuccessful, isPaidOut, amountCollected }) => {

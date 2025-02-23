@@ -1,12 +1,12 @@
 import React from 'react'
-import Header from "../components/Header"
-import Hero from "../components/Hero"
-import Features from "../components/Features"
-import HowItWorks from "../components/HowItWorks"
-import Testimonials from "../components/Testimonials"
-import Stats from "../components/Stats"
-import CTA from "../components/CTA"
-import Footer from "../components/Footer"
+import Header from "../components/Home/Header"
+import Hero from "../components/Home/Hero"
+import Features from "../components/Home/Features"
+import HowItWorks from "../components/Home/HowItWorks"
+import Testimonials from "../components/Home/Testimonials"
+import Stats from "../components/Home/Stats"
+import CTA from "../components/Home/CTA"
+import Footer from "../components/Home/Footer"
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white text-gray-800 relative">

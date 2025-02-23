@@ -32,7 +32,6 @@ export const FundlyProvider = ({ children }) => {
       const campaignsData = await contract.getCampaigns();
       setState((prev) => ({ ...prev, campaigns: campaignsData, loading: false }));
     } catch (error) {
-      console.error("Error fetching campaigns:", error);
       setState((prev) => ({ ...prev, loading: false }));
     }
   }, [contract]);
@@ -44,7 +43,6 @@ export const FundlyProvider = ({ children }) => {
       const userCampaignsData = await contract.getCampaignsByOwner(address);
       setState((prev) => ({ ...prev, userCampaigns: userCampaignsData, loading: false }));
     } catch (error) {
-      console.error("Error fetching user campaigns:", error);
       setState((prev) => ({ ...prev, loading: false }));
     }
   }, [contract, address]);
