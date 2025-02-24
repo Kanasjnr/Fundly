@@ -2,8 +2,8 @@
 
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
-import { cn } from "../lib/utils"
-import { Button } from "../components/ui/button"
+import { cn } from "../../lib/utils"
+import { Button } from "../ui/button"
 import { LayoutDashboard, Rocket, UserCheck, Vote, Image, Menu } from 'lucide-react'
 
 const menuItems = [

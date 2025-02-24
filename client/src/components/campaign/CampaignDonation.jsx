@@ -2,13 +2,13 @@
 import React from "react";
 
 import { useState } from "react"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
-import { Label } from "../components/ui/label";
+import { Label } from "../ui/label";
 import { Loader2, Wallet, Gift, Check, Share2, ArrowLeft } from "lucide-react"
-import useDonateToCompaign from "../hooks/Campaigns/useDonateToCompaign"
+import useDonateToCompaign from "../../hooks/Campaigns/useDonateToCompaign"
 import { toast } from "react-toastify"
 import confetti from "canvas-confetti"
 

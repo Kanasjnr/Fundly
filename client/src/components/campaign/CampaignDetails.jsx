@@ -8,13 +8,13 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Progress } from "../components/ui/progress";
-import { Skeleton } from "../components/ui/skeleton";
-import { Badge } from "../components/ui/badge";
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
+import { Skeleton } from "../ui/skeleton";
+import { Badge } from "../ui/badge";
 import { Users, Milestone, Clock, TrendingUp } from "lucide-react";
-import useGetCampaign from "../hooks/Campaigns/useGetCampaign";
+import useGetCampaign from "../../hooks/Campaigns/useGetCampaign";
 import { toast } from "react-toastify";
 import CampaignDonation from "./CampaignDonation";
 import CampaignWithdrawal from "./CampaignWithdrawal";

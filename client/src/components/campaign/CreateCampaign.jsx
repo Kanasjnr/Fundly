@@ -8,14 +8,14 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
-import { Button } from "../components/ui/button";
-import { Progress } from "../components/ui/progress";
-import { Switch } from "../components/ui/switch";
-import { ScrollArea } from "../components/ui/scroll-area";
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
+import { Switch } from "../ui/switch";
+import { ScrollArea } from "../ui/scroll-area";
 import {
   Loader2,
   Upload,
@@ -31,9 +31,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../components/ui/tooltip";
+} from "../ui/tooltip";
 import { toast } from "react-toastify";
-import useCreateCampaign from "../hooks/Campaigns/useCreateCampaign";
+import useCreateCampaign from "../../hooks/Campaigns/useCreateCampaign";
 
 const CreateCampaign = () => {
   const { createCampaign, loading, error } = useCreateCampaign();

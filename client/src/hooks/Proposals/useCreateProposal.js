@@ -31,7 +31,13 @@ const useCreateProposal = () => {
       setError(null)
 
       try {
-        const tx = await contract.createProposal(campaignId, description, votingPeriod, proposalType)
+        // Ensure all numeric parameters are properly converted to BigInt compatible values
+        const tx = await contract.createProposal(
+          BigInt(campaignId),
+          description,
+          BigInt(votingPeriod),
+          BigInt(proposalType)
+        )
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
@@ -56,4 +62,3 @@ const useCreateProposal = () => {
 }
 
 export default useCreateProposal
-

@@ -1,19 +1,17 @@
-import { Routes, Route } from "react-router-dom"
-import React from "react"
+import { Routes, Route } from "react-router-dom";
 
-import { Sidebar } from "../components/Sidebar"
-import { DashboardHeader } from "../components/DashboardHeader"
-import DashboardContent from "../components/DashboardContent"
-import CampaignListing from "../components/CampaignListing"
-import CampaignDetails from "../components/CampaignDetails"
-import Governance from "../components/Governance"
-import NFTs from "../components/NFTs"
-import CreateCampaign from "../components/CreateCampaign"
-import { KYCStatus } from "../components/KYCStatus"
-import { KYCSubmissionForm } from "../components/KYCSubmissionForm"
-import { KYCVerificationList } from "../components/KYCVerificationList"
-
-
+import { Sidebar } from "../components/Dashboard/Sidebar";
+import { DashboardHeader } from "../components/Dashboard/DashboardHeader";
+import DashboardContent from "../components/Dashboard/DashboardContent";
+import CampaignListing from "../components/campaign/CampaignListing";
+import CampaignDetails from "../components/campaign/CampaignDetails";
+import Governance from "../components/Governance/Governance";
+import ProposalDetails from "../components/Governance/ProposalDetails"; // Add this import
+import NFTs from "../components/campaign/NFTs";
+import CreateCampaign from "../components/campaign/CreateCampaign";
+import { KYCStatus } from "../components/KYC/KYCStatus";
+import { KYCSubmissionForm } from "../components/KYC/KYCSubmissionForm";
+import { KYCVerificationList } from "../components/KYC/KYCVerificationList";
 
 function DashboardPage() {
   return (
@@ -27,9 +25,13 @@ function DashboardPage() {
               <Route path="/" element={<DashboardContent />} />
               <Route path="/campaigns" element={<CampaignListing />} />
               <Route path="/create-campaign" element={<CreateCampaign />} />
-
               <Route path="/campaigns/:id" element={<CampaignDetails />} />
               <Route path="/governance" element={<Governance />} />
+              <Route
+                path="/governance/:proposalId"
+                element={<ProposalDetails />}
+              />{" "}
+              {/* Add this route */}
               <Route path="/nfts" element={<NFTs />} />
               <Route
                 path="/kyc"
@@ -45,10 +47,8 @@ function DashboardPage() {
           </div>
         </main>
       </div>
-      {/* <Notifications /> */}
     </div>
-  )
+  );
 }
 
-export default DashboardPage
-
+export default DashboardPage;

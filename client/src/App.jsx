@@ -2,7 +2,7 @@ import "./config/connection";
 import React from 'react'
 
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
-import { SidebarProvider } from './components/SidebarProvider'
+import { SidebarProvider } from './components/Dashboard/SidebarProvider'
 import DashboardPage from './pages/DashboardPage'
 import LandingPage from './pages/LandingPage'
 

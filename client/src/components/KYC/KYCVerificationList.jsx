@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
-import useVerifyKYC from "../hooks/KYC/useVerifyKYC"
-import useGetPendingVerifications from "../hooks/KYC/useGetPendingVerifications"
-import useGetUserKYCDetails from "../hooks/KYC/useGetUserKYCDetails"
-import { Button } from "../components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table"
+import useVerifyKYC from "../../hooks/KYC/useVerifyKYC"
+import useGetPendingVerifications from "../../hooks/KYC/useGetPendingVerifications"
+import useGetUserKYCDetails from "../../hooks/KYC/useGetUserKYCDetails"
+import { Button } from "../../components/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
 import { Loader } from "lucide-react"
 
 export function KYCVerificationList() {

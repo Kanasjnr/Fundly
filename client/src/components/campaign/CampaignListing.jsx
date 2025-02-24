@@ -5,13 +5,13 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Link } from "react-router-dom"
 
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { Progress } from "../components/ui/progress"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../ui/card"
+import { Button } from "../ui/button"
+import { Progress } from "../ui/progress"
 import { Loader2, Filter, ArrowUpDown } from "lucide-react"
 import { toast } from "react-toastify"
 
-import useGetCampaign from "../hooks/Campaigns/useGetCampaign";
+import useGetCampaign from "../../hooks/Campaigns/useGetCampaign";
 
 
 const CampaignListing = () => {
