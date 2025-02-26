@@ -31,7 +31,37 @@ const useExecuteProposal = () => {
       setError(null)
 
       try {
-        const tx = await contract.executeProposal(proposalId)
+        // First, check if the proposal can be executed
+        const proposal = await contract.proposals(proposalId)
+        const now = Math.floor(Date.now() / 1000)
+
+        if (!proposal || proposal.id.toString() === "0") {
+          throw new Error("Proposal not found")
+        }
+
+        if (proposal.executed) {
+          throw new Error("Proposal has already been executed")
+        }
+
+        if (now <= proposal.endTime) {
+          throw new Error("Voting period has not ended yet")
+        }
+
+        // Get quorum votes
+        const quorumVotes = await contract.quorumVotes()
+        if (proposal.totalVotes < quorumVotes) {
+          throw new Error("Proposal has not reached quorum")
+        }
+
+        if (proposal.forVotes <= proposal.againstVotes) {
+          throw new Error("Proposal has not passed")
+        }
+
+        // If all checks pass, execute the proposal
+        const tx = await contract.executeProposal(proposalId, {
+          gasLimit: 500000, // Add a gas limit to prevent unexpected reverts
+        })
+
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
@@ -42,8 +72,10 @@ const useExecuteProposal = () => {
         }
       } catch (err) {
         console.error("Transaction error:", err)
-        setError("Error executing proposal: " + (err.message || "Unknown error"))
-        toast.error(`Error: ${err.message || "An unknown error occurred."}`)
+        // Extract the revert reason if available
+        const revertReason = err.reason || err.message || "Unknown error"
+        setError("Error executing proposal: " + revertReason)
+        toast.error(`Error: ${revertReason}`)
         return false
       } finally {
         setLoading(false)
