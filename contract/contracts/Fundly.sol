@@ -3,12 +3,11 @@ pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./KYCManager.sol";
 
-contract Fundly is ERC721URIStorage, ERC721Enumerable, AccessControl {
+contract Fundly is ERC721URIStorage, AccessControl {
     using Strings for uint256;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -74,10 +73,6 @@ contract Fundly is ERC721URIStorage, ERC721Enumerable, AccessControl {
     uint256 public proposalCount;
     uint256 public immutable quorumVotes;
     uint256 private _nextTokenId;
-
-    // Mappings to track token metadata
-    mapping(uint256 => uint256) private _tokenToCampaign;
-    mapping(uint256 => uint256) private _tokenToDonationAmount;
 
     mapping(uint256 => Proposal) public proposals;
     mapping(address => mapping(uint256 => bool)) public hasVoted;
@@ -145,7 +140,6 @@ contract Fundly is ERC721URIStorage, ERC721Enumerable, AccessControl {
     error TransferFailed();
     error Unauthorized();
     error InvalidMilestoneCount();
-    error TokenDoesNotExist();
 
     modifier validAddress(address _address) {
         if (_address == address(0)) revert InvalidAddress();
@@ -239,10 +233,6 @@ contract Fundly is ERC721URIStorage, ERC721Enumerable, AccessControl {
 
         uint256 newTokenId = _nextTokenId++;
         _safeMint(msg.sender, newTokenId);
-        
-        // Store token metadata
-        _tokenToCampaign[newTokenId] = _id;
-        _tokenToDonationAmount[newTokenId] = msg.value;
 
         string memory tokenURI = generateTokenURI(_id, msg.value);
         _setTokenURI(newTokenId, tokenURI);
@@ -408,95 +398,6 @@ contract Fundly is ERC721URIStorage, ERC721Enumerable, AccessControl {
         }
     }
 
-    // NFT-related functions
-
-    // Get all NFTs owned by a specific user
-    function getUserNFTs(address user) public view returns (uint256[] memory) {
-        uint256 balance = balanceOf(user);
-        uint256[] memory tokenIds = new uint256[](balance);
-        
-        for (uint256 i = 0; i < balance; i++) {
-            tokenIds[i] = tokenOfOwnerByIndex(user, i);
-        }
-        
-        return tokenIds;
-    }
-
-    // Get campaign-specific NFTs owned by a user
-    function getUserCampaignNFTs(address user, uint256 campaignId) public view campaignExists(campaignId) returns (uint256[] memory) {
-        uint256 balance = balanceOf(user);
-        
-        // First, count how many NFTs the user has for this campaign
-        uint256 count = 0;
-        for (uint256 i = 0; i < balance; i++) {
-            uint256 tokenId = tokenOfOwnerByIndex(user, i);
-            if (_tokenToCampaign[tokenId] == campaignId) {
-                count++;
-            }
-        }
-        
-        // Then create the array of the right size
-        uint256[] memory campaignTokens = new uint256[](count);
-        uint256 index = 0;
-        
-        for (uint256 i = 0; i < balance; i++) {
-            uint256 tokenId = tokenOfOwnerByIndex(user, i);
-            if (_tokenToCampaign[tokenId] == campaignId) {
-                campaignTokens[index] = tokenId;
-                index++;
-            }
-        }
-        
-        return campaignTokens;
-    }
-
-    // Get NFT details
-    function getNFTDetails(uint256 tokenId) public view returns (
-        uint256 campaignId,
-        uint256 donationAmount,
-        string memory uri
-    ) {
-        if (!_exists(tokenId)) revert TokenDoesNotExist();
-        
-        campaignId = _tokenToCampaign[tokenId];
-        donationAmount = _tokenToDonationAmount[tokenId];
-        uri = tokenURI(tokenId);
-    }
-
-    // Get all donation NFTs for a campaign
-    function getCampaignNFTs(uint256 campaignId) public view campaignExists(campaignId) returns (uint256[] memory) {
-        // This is less efficient as we need to check all tokens
-        // A better implementation would track tokens by campaign
-        
-        uint256 totalSupply = _nextTokenId;
-        
-        // First, count tokens for this campaign
-        uint256 count = 0;
-        for (uint256 i = 0; i < totalSupply; i++) {
-            if (_exists(i) && _tokenToCampaign[i] == campaignId) {
-                count++;
-            }
-        }
-        
-        // Then create the array
-        uint256[] memory campaignTokens = new uint256[](count);
-        uint256 index = 0;
-        
-        for (uint256 i = 0; i < totalSupply; i++) {
-            if (_exists(i) && _tokenToCampaign[i] == campaignId) {
-                campaignTokens[index] = i;
-                index++;
-            }
-        }
-        
-        return campaignTokens;
-    }
-
-    // Helper function to check if a token exists
-    function _exists(uint256 tokenId) internal view returns (bool) {
-        return _ownerOf(tokenId) != address(0);
-    }
-
     // View Functions
     function getAllCampaigns() public view returns (Campaign[] memory) {
         return campaigns;
@@ -580,24 +481,10 @@ contract Fundly is ERC721URIStorage, ERC721Enumerable, AccessControl {
             );
     }
 
-    // Override required functions
+    // Override required function
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721URIStorage, ERC721Enumerable, AccessControl) returns (bool) {
+    ) public view override(ERC721URIStorage, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
-    }
-
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
 }
-
