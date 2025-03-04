@@ -31,21 +31,19 @@ const useCreateProposal = () => {
       setError(null)
 
       try {
-        // Ensure all numeric parameters are properly converted to BigInt compatible values
-        const tx = await contract.createProposal(
-          BigInt(campaignId),
-          description,
-          BigInt(votingPeriod),
-          BigInt(proposalType)
-        )
+        const tx = await contract.createProposal(campaignId, description, votingPeriod, proposalType)
+
+        // Wait for the transaction to be mined and get the receipt
         const receipt = await tx.wait()
 
-        if (receipt.status === 1) {
-          toast.success("Proposal created successfully!")
-          return true
-        } else {
-          throw new Error("Transaction failed")
+        // Check for the ProposalCreated event
+        const event = receipt.events?.find((e) => e.event === "ProposalCreated")
+        if (!event) {
+          throw new Error("Proposal creation event not found")
         }
+
+        toast.success("Proposal created successfully!")
+        return true
       } catch (err) {
         console.error("Transaction error:", err)
         setError("Error creating proposal: " + (err.message || "Unknown error"))
@@ -62,3 +60,4 @@ const useCreateProposal = () => {
 }
 
 export default useCreateProposal
+

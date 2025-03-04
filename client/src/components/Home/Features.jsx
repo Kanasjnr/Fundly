@@ -1,4 +1,3 @@
-import React from "react"
 import { motion } from "framer-motion"
 import { Shield, Zap, Coins, Users, Gift, BarChart } from "lucide-react"
 

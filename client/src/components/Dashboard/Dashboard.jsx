@@ -1,38 +1,37 @@
-"use client"
-import React from "react"
+"use client";
 
-import { useState } from "react"
-import { Sidebar } from "../Sidebar"
-import { Header } from "./Header"
-import DashboardContent from "./DashboardContent"
-import CampaignManagement from "./CampaignManagement"
-import DonationManagement from "./DonationManagement"
-import GovernanceManagement from "./GovernanceManagement"
-import KYCVerification from "./KYCVerification"
-import NFTManagement from "./NFTManagement"
-import Notifications from "./Notifications"
+import { useState } from "react";
+import { Sidebar } from "../Sidebar";
+import { Header } from "./Header";
+import DashboardContent from "./DashboardContent";
+import CampaignManagement from "./CampaignManagement";
+import DonationManagement from "./DonationManagement";
+import GovernanceManagement from "./GovernanceManagement";
+import KYCVerification from "./KYCVerification";
+import NFTManagement from "./NFTManagement";
+import Notifications from "./Notifications";
 
 function Dashboard() {
-  const [activeSection, setActiveSection] = useState("dashboard")
+  const [activeSection, setActiveSection] = useState("dashboard");
 
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
-        return <DashboardContent />
+        return <DashboardContent />;
       case "campaigns":
-        return <CampaignManagement />
+        return <CampaignManagement />;
       case "donations":
-        return <DonationManagement />
+        return <DonationManagement />;
       case "governance":
-        return <GovernanceManagement />
+        return <GovernanceManagement />;
       case "kyc":
-        return <KYCVerification />
+        return <KYCVerification />;
       case "nfts":
-        return <NFTManagement />
+        return <NFTManagement />;
       default:
-        return <DashboardContent />
+        return <DashboardContent />;
     }
-  }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50 text-gray-900">
@@ -45,8 +44,7 @@ function Dashboard() {
       </div>
       <Notifications />
     </div>
-  )
+  );
 }
 
-export default Dashboard
-
+export default Dashboard;

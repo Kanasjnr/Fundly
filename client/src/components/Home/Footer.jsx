@@ -1,6 +1,3 @@
-import React from "react";
-
-"use client"
 import { motion } from "framer-motion"
 import { Twitter, Facebook, Instagram, GitlabIcon as GitHub } from "lucide-react"
 

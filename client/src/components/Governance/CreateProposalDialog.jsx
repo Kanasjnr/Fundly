@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState,memo } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
@@ -15,9 +15,13 @@ const PROPOSAL_TYPES = {
   UPGRADE: 2,
 }
 
-const CreateProposalDialog = ({ open, onOpenChange, onSuccess }) => {
-  console.log("Rendering CreateProposalDialog, open:", open)
+const VOTING_PERIODS = {
+  86400: "1 Day",
+  259200: "3 Days",
+  604800: "1 Week",
+}
 
+const CreateProposalDialog = memo(({ open, onOpenChange, onSuccess }) => {
   const [formData, setFormData] = useState({
     campaignId: "",
     description: "",
@@ -28,7 +32,6 @@ const CreateProposalDialog = ({ open, onOpenChange, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("Submitting proposal with data:", formData)
 
     const success = await createProposal(
       Number(formData.campaignId),
@@ -37,10 +40,8 @@ const CreateProposalDialog = ({ open, onOpenChange, onSuccess }) => {
       PROPOSAL_TYPES[formData.proposalType],
     )
 
-    console.log("Proposal creation result:", success)
     if (success) {
       onSuccess?.()
-      onOpenChange(false)
       setFormData({
         campaignId: "",
         description: "",
@@ -90,10 +91,11 @@ const CreateProposalDialog = ({ open, onOpenChange, onSuccess }) => {
                 <SelectValue placeholder="Select voting period" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="86400">1 Day</SelectItem>
-                <SelectItem value="259200">3 Days</SelectItem>
-                <SelectItem value="604800">1 Week</SelectItem>
-                <SelectItem value="1209600">2 Weeks</SelectItem>
+                {Object.entries(VOTING_PERIODS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -108,9 +110,11 @@ const CreateProposalDialog = ({ open, onOpenChange, onSuccess }) => {
                 <SelectValue placeholder="Select proposal type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="GENERAL">General</SelectItem>
-                <SelectItem value="PARAMETER">Parameter Change</SelectItem>
-                <SelectItem value="UPGRADE">Contract Upgrade</SelectItem>
+                {Object.keys(PROPOSAL_TYPES).map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.charAt(0) + type.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -134,7 +138,9 @@ const CreateProposalDialog = ({ open, onOpenChange, onSuccess }) => {
       </DialogContent>
     </Dialog>
   )
-}
+})
+
+CreateProposalDialog.displayName = "CreateProposalDialog"
 
 export default CreateProposalDialog
 
