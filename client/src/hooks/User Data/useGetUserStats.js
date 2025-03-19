@@ -41,7 +41,7 @@ const useGetUserStats = () => {
       if (!contract) {
         const message = "Contract is not available"
         setError(message)
-        toast.error(message)
+        // toast.error(message)
         return null
       }
 

@@ -14,7 +14,7 @@ const useGetCampaignStatus = () => {
   const getCampaignStatus = useCallback(
     async (campaignId) => {
       if (!contract) {
-        toast.error("Contract is not available")
+        // toast.error("Contract is not available")
         return null
       }
 

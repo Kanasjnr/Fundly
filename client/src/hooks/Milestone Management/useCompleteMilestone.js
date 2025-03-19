@@ -23,7 +23,7 @@ const useCompleteMilestone = () => {
       }
 
       if (!signer || !contract) {
-        toast.error("Contract or signer is not available")
+        // toast.error("Contract or signer is not available")
         return { success: false }
       }
 

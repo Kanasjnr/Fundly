@@ -15,7 +15,7 @@ const useGetTokenData = () => {
   const getTokenData = useCallback(
     async (tokenId) => {
       if (!contract) {
-        toast.error("Contract is not available")
+        // toast.error("Contract is not available")
         return null
       }
 

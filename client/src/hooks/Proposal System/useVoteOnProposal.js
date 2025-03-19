@@ -77,7 +77,7 @@ const useVoteOnProposal = () => {
       if (!signer || !contract) {
         const message = "Contract or signer is not available"
         setError(message)
-        toast.error(message)
+        // toast.error(message)
         return { success: false }
       }
 

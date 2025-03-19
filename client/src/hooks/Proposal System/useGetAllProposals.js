@@ -15,7 +15,7 @@ const useGetAllProposals = () => {
   const getAllProposals = useCallback(async () => {
     if (!contract) {
       console.error("Contract not available")
-      toast.error("Contract is not available")
+      // toast.error("Contract is not available")
       return []
     }
 

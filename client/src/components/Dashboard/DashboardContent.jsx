@@ -212,7 +212,7 @@ const DashboardContent = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : `${stats?.totalDonated.toFixed(4) || 0} ETH`}
+              {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : `${stats?.totalDonated || 0} XFI`}
             </div>
             <p className="text-xs text-muted-foreground">Across {stats?.campaignsBacked || 0} campaigns</p>
           </CardContent>

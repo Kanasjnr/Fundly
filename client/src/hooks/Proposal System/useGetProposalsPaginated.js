@@ -15,7 +15,7 @@ const useGetProposalsPaginated = () => {
   const getProposalsPaginated = useCallback(
     async (startIndex = 0, pageSize = 10) => {
       if (!contract) {
-        toast.error("Contract is not available");
+        // toast.error("Contract is not available");
         return null;
       }
 
