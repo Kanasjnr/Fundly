@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
+import { ethers } from "ethers"
 import { useAppKitAccount } from "@reown/appkit/react"
 import useSignerOrProvider from "../useSignerOrProvider"
 import useContract from "../useContract"
@@ -16,22 +17,34 @@ const useCreateProposal = () => {
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
   const createProposal = useCallback(
-    async (campaignId, description, votingPeriod, proposalType) => {
+    async (campaignId, description, votingPeriod, proposalType, newMilestones = []) => {
       if (!address || !isConnected) {
         toast.error("Please connect your wallet")
-        return false
+        return { success: false }
       }
 
       if (!signer || !contract) {
         toast.error("Contract or signer is not available")
-        return false
+        return { success: false }
       }
 
       setLoading(true)
       setError(null)
 
       try {
-        const tx = await contract.createProposal(campaignId, description, votingPeriod, proposalType)
+        // Convert voting period to seconds
+        const votingPeriodInSeconds = votingPeriod * 24 * 60 * 60 // days to seconds
+
+        // Convert milestone values to wei if provided
+        const milestonesInWei = newMilestones.map((milestone) => ethers.parseEther(milestone.toString()))
+
+        const tx = await contract.createProposal(
+          campaignId,
+          description,
+          votingPeriodInSeconds,
+          proposalType,
+          milestonesInWei,
+        )
 
         // Wait for the transaction to be mined and get the receipt
         const receipt = await tx.wait()
@@ -42,13 +55,28 @@ const useCreateProposal = () => {
           throw new Error("Proposal creation event not found")
         }
 
+        const proposalId = event.args.proposalId.toString()
+
         toast.success("Proposal created successfully!")
-        return true
+        return { success: true, proposalId }
       } catch (err) {
         console.error("Transaction error:", err)
-        setError("Error creating proposal: " + (err.message || "Unknown error"))
+
+        // Handle specific contract errors
+        if (err.message?.includes("InvalidDuration")) {
+          setError("Voting period must be between 1 and 7 days.")
+        } else if (err.message?.includes("InvalidMilestoneCount")) {
+          setError("Invalid milestone count. Must be between 1 and 10.")
+        } else if (err.message?.includes("CampaignNotFound")) {
+          setError("Campaign not found.")
+        } else if (err.message?.includes("InvalidKYC")) {
+          setError("You must complete KYC verification first.")
+        } else {
+          setError("Error creating proposal: " + (err.message || "Unknown error"))
+        }
+
         toast.error(`Error: ${err.message || "An unknown error occurred."}`)
-        return false
+        return { success: false, error: err.message }
       } finally {
         setLoading(false)
       }

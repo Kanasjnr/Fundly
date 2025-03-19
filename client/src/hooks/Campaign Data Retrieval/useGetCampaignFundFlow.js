@@ -2,16 +2,17 @@
 
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
+import { ethers } from "ethers"
 import useContract from "../useContract"
 import FundlyABI from "../../abis/Fundly.json"
 
-const useGetCampaignStatus = () => {
+const useGetCampaignFundFlow = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_CONTRACT_ADDRESS
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
-  const getCampaignStatus = useCallback(
+  const getCampaignFundFlow = useCallback(
     async (campaignId) => {
       if (!contract) {
         toast.error("Contract is not available")
@@ -22,11 +23,14 @@ const useGetCampaignStatus = () => {
       setError(null)
 
       try {
-        const status = await contract.getCampaignStatus(campaignId)
-        return status
+        const fundFlow = await contract.getCampaignFundFlow(campaignId)
+        return {
+          donations: fundFlow[0].map((d) => ethers.formatEther(d)),
+          milestones: fundFlow[1].map((m) => ethers.formatEther(m)),
+        }
       } catch (err) {
-        console.error("Error fetching campaign status:", err)
-        setError("Error fetching campaign status: " + (err.message || "Unknown error"))
+        console.error("Error fetching campaign fund flow:", err)
+        setError("Error fetching campaign fund flow: " + (err.message || "Unknown error"))
         toast.error(`Error: ${err.message || "An unknown error occurred."}`)
         return null
       } finally {
@@ -36,7 +40,8 @@ const useGetCampaignStatus = () => {
     [contract],
   )
 
-  return { getCampaignStatus, loading, error }
+  return { getCampaignFundFlow, loading, error }
 }
 
-export default useGetCampaignStatus
+export default useGetCampaignFundFlow
+

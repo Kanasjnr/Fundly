@@ -1,3 +1,4 @@
+"use client"
 
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
@@ -6,7 +7,7 @@ import useSignerOrProvider from "../useSignerOrProvider"
 import useContract from "../useContract"
 import FundlyABI from "../../abis/Fundly.json"
 
-const useWithdrawCampaignFunds = () => {
+const useCompleteMilestone = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const { address, isConnected } = useAppKitAccount()
@@ -14,36 +15,49 @@ const useWithdrawCampaignFunds = () => {
   const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_CONTRACT_ADDRESS
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
-  const withdrawCampaignFunds = useCallback(
-    async (campaignId) => {
+  const completeMilestone = useCallback(
+    async (campaignId, proof) => {
       if (!address || !isConnected) {
         toast.error("Please connect your wallet")
-        return false
+        return { success: false }
       }
 
       if (!signer || !contract) {
         toast.error("Contract or signer is not available")
-        return false
+        return { success: false }
       }
 
       setLoading(true)
       setError(null)
 
       try {
-        const tx = await contract.withdrawCampaignFunds(campaignId)
+        const tx = await contract.completeMilestone(campaignId, proof)
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
-          toast.success("Funds withdrawn successfully!")
-          return true
+          // Find the MilestoneCompleted event
+          const event = receipt.events?.find((e) => e.event === "MilestoneCompleted")
+          const milestoneIndex = event?.args?.milestoneIndex?.toString()
+
+          toast.success("Milestone completed successfully!")
+          return { success: true, milestoneIndex }
         } else {
           throw new Error("Transaction failed")
         }
       } catch (err) {
         console.error("Transaction error:", err)
-        setError("Error withdrawing funds: " + (err.message || "Unknown error"))
+
+        // Handle specific contract errors
+        if (err.message?.includes("Unauthorized")) {
+          setError("Only the campaign owner can complete milestones.")
+        } else if (err.message?.includes("InvalidMilestoneCount")) {
+          setError("All milestones have already been completed.")
+        } else {
+          setError("Error completing milestone: " + (err.message || "Unknown error"))
+        }
+
         toast.error(`Error: ${err.message || "An unknown error occurred."}`)
-        return false
+        return { success: false, error: err.message }
       } finally {
         setLoading(false)
       }
@@ -51,7 +65,8 @@ const useWithdrawCampaignFunds = () => {
     [address, isConnected, signer, contract],
   )
 
-  return { withdrawCampaignFunds, loading, error }
+  return { completeMilestone, loading, error }
 }
 
-export default useWithdrawCampaignFunds
+export default useCompleteMilestone
+

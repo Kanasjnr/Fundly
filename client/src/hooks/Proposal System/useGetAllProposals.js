@@ -1,6 +1,8 @@
+"use client"
 
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
+import { ethers } from "ethers"
 import useContract from "../useContract"
 import FundlyABI from "../../abis/Fundly.json"
 
@@ -36,8 +38,10 @@ const useGetAllProposals = () => {
           totalVotes: Number(proposal.totalVotes),
           campaignId: Number(proposal.campaignId),
           proposalType: Number(proposal.proposalType),
+          proposalTypeText: ["Fund Allocation", "Milestone Adjustment"][Number(proposal.proposalType)],
           createdAt: Number(proposal.createdAt),
           creator: proposal.creator,
+          newMilestones: proposal.newMilestones?.map((m) => ethers.formatEther(m)) || [],
         }))
 
       return formattedProposals

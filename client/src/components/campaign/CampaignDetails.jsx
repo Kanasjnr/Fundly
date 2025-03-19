@@ -1,34 +1,38 @@
-"use client";
-import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+"use client"
+import { useState, useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
-import { Skeleton } from "../ui/skeleton";
-import { Badge } from "../ui/badge";
-import { Users, Milestone, Clock, TrendingUp } from "lucide-react";
-import useGetCampaign from "../../hooks/Campaigns/useGetCampaign";
-import { toast } from "react-toastify";
-import CampaignDonation from "./CampaignDonation";
-import CampaignWithdrawal from "./CampaignWithdrawal";
-import { useAppKitAccount } from "@reown/appkit/react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "../ui/card"
+import { Button } from "../ui/button"
+import { Progress } from "../ui/progress"
+import { Skeleton } from "../ui/skeleton"
+import { Badge } from "../ui/badge"
+import { Textarea } from "../ui/textarea"
+import { Label } from "../ui/label"
+import { Users, Milestone, Clock, TrendingUp, CheckCircle, Loader2, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription } from "../ui/alert"
+import useGetCampaign from "../../hooks/Campaign Data Retrieval/useGetCampaign"
+import useCompleteMilestone from "../../hooks/Milestone Management/useCompleteMilestone"
+import { toast } from "react-toastify"
+import CampaignDonation from "./CampaignDonation"
+import CampaignWithdrawal from "./CampaignWithdrawal"
+import CampaignRefund from "./CampaignRefund"
+import { useAppKitAccount } from "@reown/appkit/react"
 
 const CampaignDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { getCampaign, loading: hookLoading, error: hookError, isContractReady } = useGetCampaign()
+  const { completeMilestone, loading: milestoneLoading, error: milestoneError } = useCompleteMilestone()
   const [campaign, setCampaign] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [proof, setProof] = useState("")
+  const [userDonationAmount, setUserDonationAmount] = useState("0")
+  const [hasClaimedRefund, setHasClaimedRefund] = useState(false)
   const { address } = useAppKitAccount()
 
+  // Fetch campaign data
   useEffect(() => {
     let mounted = true
 
@@ -62,6 +66,21 @@ const CampaignDetails = () => {
         if (result) {
           console.log("Campaign data received:", result)
           setCampaign(result)
+
+          // Check if the current user has donated to this campaign
+          if (address && result.donators) {
+            const userDonationIndex = result.donators.findIndex(
+              (donator) => donator.toLowerCase() === address.toLowerCase(),
+            )
+
+            if (userDonationIndex !== -1 && result.donations) {
+              setUserDonationAmount(result.donations[userDonationIndex] || "0")
+
+              // In a real implementation, you would check if the user has claimed a refund
+              // This would typically be done by calling a contract method
+              setHasClaimedRefund(false)
+            }
+          }
         } else {
           console.log("No campaign data received")
           setError("Failed to fetch campaign data")
@@ -85,7 +104,32 @@ const CampaignDetails = () => {
     return () => {
       mounted = false
     }
-  }, [id, getCampaign, isContractReady])
+  }, [id, getCampaign, isContractReady, address])
+
+  const handleCompleteMilestone = async () => {
+    if (!proof.trim()) {
+      toast.error("Please provide proof of milestone completion")
+      return
+    }
+
+    try {
+      const result = await completeMilestone(Number(id), proof)
+      if (result && result.success) {
+        toast.success(`Milestone ${Number(result.milestoneIndex) + 1} completed successfully!`)
+
+        // Refresh campaign data
+        const updatedCampaign = await getCampaign(Number(id))
+        if (updatedCampaign) {
+          setCampaign(updatedCampaign)
+        }
+
+        // Clear proof input
+        setProof("")
+      }
+    } catch (err) {
+      console.error("Error completing milestone:", err)
+    }
+  }
 
   if (!id) {
     return (
@@ -154,22 +198,16 @@ const CampaignDetails = () => {
 
   const isEnded = campaign.analytics.timeRemaining <= 0
   const isSuccessful = campaign.statusText === "Successful"
+  const isFailed = campaign.statusText === "Failed"
   const showDonation = campaign.statusText === "Active"
+  const isOwner = address && campaign.owner && address.toLowerCase() === campaign.owner.toLowerCase()
+  const canCompleteMilestone =
+    isOwner &&
+    campaign.statusText === "Active" &&
+    campaign.analytics.currentMilestoneIndex < campaign.milestones.length - 1
 
-  // Debug logging
-  console.log("Campaign Details State:", {
-    isEnded,
-    isSuccessful,
-    statusText: campaign.statusText,
-    timeRemaining: campaign.analytics.timeRemaining,
-    paidOut: campaign.paidOut,
-    owner: campaign.owner,
-    address,
-    isOwner: address === campaign.owner,
-    fundingProgress: campaign.analytics.fundingProgress,
-    target: campaign.target,
-    amountCollected: campaign.amountCollected
-  })
+  // Check if user can claim refund
+  const canClaimRefund = isFailed && Number.parseFloat(userDonationAmount) > 0 && !hasClaimedRefund
 
   return (
     <div className="space-y-6">
@@ -184,6 +222,9 @@ const CampaignDetails = () => {
         src={campaign.image || "/placeholder.svg?height=300&width=500"}
         alt={campaign.title}
         className="w-full h-64 object-cover rounded-lg"
+        onError={(e) => {
+          e.target.src = "/placeholder.svg?height=300&width=500"
+        }}
       />
 
       <Card>
@@ -245,15 +286,68 @@ const CampaignDetails = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
-            {showDonation && (
-              <CampaignDonation 
-                campaignId={Number(id)} 
-                isActive={true} 
-                minAmount={0.01} 
-              />
-            )}
+          {/* Milestone Completion Section (Only visible to campaign owner) */}
+          {canCompleteMilestone && (
+            <Card className="border-2 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  Complete Milestone
+                </CardTitle>
+                <CardDescription>
+                  Mark the current milestone as completed to unlock the next funding milestone
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="proof">Proof of Completion</Label>
+                  <Textarea
+                    id="proof"
+                    placeholder="Provide details or links to evidence of milestone completion"
+                    value={proof}
+                    onChange={(e) => setProof(e.target.value)}
+                    rows={4}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Provide evidence that you've completed the current milestone. This could be links to deliverables,
+                    progress reports, or other relevant information.
+                  </p>
+                </div>
 
+                {milestoneError && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{milestoneError}</AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={handleCompleteMilestone}
+                  disabled={milestoneLoading || !proof.trim()}
+                >
+                  {milestoneLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Complete Milestone {campaign.analytics.currentMilestoneIndex + 1}
+                    </>
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          )}
+
+          <div className="space-y-6">
+            {/* Donation Component */}
+            {showDonation && <CampaignDonation campaignId={Number(id)} isActive={true} minAmount={0.01} />}
+
+            {/* Withdrawal Component */}
             <CampaignWithdrawal
               campaignId={Number(id)}
               campaignOwner={campaign.owner}
@@ -262,6 +356,17 @@ const CampaignDetails = () => {
               isPaidOut={campaign.paidOut}
               amountCollected={campaign.amountCollected}
             />
+
+            {/* Refund Component */}
+            {canClaimRefund && (
+              <CampaignRefund
+                campaignId={Number(id)}
+                campaignTitle={campaign.title}
+                isFailed={isFailed}
+                donationAmount={userDonationAmount}
+                hasClaimedRefund={hasClaimedRefund}
+              />
+            )}
 
             <Button className="w-full" onClick={() => navigate(-1)}>
               Back to Campaigns
@@ -274,3 +379,4 @@ const CampaignDetails = () => {
 }
 
 export default CampaignDetails
+

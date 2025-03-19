@@ -23,15 +23,24 @@ const useGetCampaignAnalytics = () => {
 
       try {
         const analytics = await contract.getCampaignAnalytics(campaignId)
+
+        // Format the analytics based on the contract return values
         return {
-          totalBackers: analytics[0].toNumber(),
-          fundingProgress: analytics[1].toNumber(),
-          timeRemaining: analytics[2].toNumber(),
-          currentMilestone: analytics[3].toNumber(),
+          totalBackers: Number(analytics.totalBackers),
+          fundingProgress: Number(analytics.fundingProgress), // This is a percentage
+          timeRemaining: Number(analytics.timeRemaining), // In seconds
+          currentMilestone: Number(analytics.currentMilestone),
         }
       } catch (err) {
         console.error("Error fetching campaign analytics:", err)
-        setError("Error fetching campaign analytics: " + (err.message || "Unknown error"))
+
+        // Handle specific contract errors
+        if (err.message?.includes("CampaignNotFound")) {
+          setError("Campaign not found")
+        } else {
+          setError("Error fetching campaign analytics: " + (err.message || "Unknown error"))
+        }
+
         toast.error(`Error: ${err.message || "An unknown error occurred."}`)
         return null
       } finally {
@@ -45,3 +54,4 @@ const useGetCampaignAnalytics = () => {
 }
 
 export default useGetCampaignAnalytics
+
