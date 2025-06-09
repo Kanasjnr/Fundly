@@ -15,8 +15,9 @@ const config: HardhatUserConfig = {
   },
   networks: {
     crossFi: {
-      url: process.env.CROSSFI_RPC_URL,
+      url: process.env.CROSSFI_RPC_URL || "https://rpc.mainnet.ms",
       accounts: [process.env.PRIVATE_KEY as string],
+      chainId: 4158,
     },
   },
 };

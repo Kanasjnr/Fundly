@@ -2,11 +2,11 @@ import { createAppKit } from "@reown/appkit/react";
 import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 import { defineChain } from "@reown/appkit/networks";
 
-const crossFiTestnet = defineChain({
-  id: 4157,
-  caipNetworkId: "eip155:4157",
+const crossFiMainnet = defineChain({
+  id: 4158,
+  caipNetworkId: "eip155:4158",
   chainNamespace: "eip155",
-  name: "CrossFi Testnet",
+  name: "CrossFi Mainnet",
   nativeCurrency: {
     decimals: 18,
     name: "XFI",
@@ -45,16 +45,16 @@ const metadata = {
 // 4. Create a AppKit instance
 export const appkit = createAppKit({
   adapters: [new EthersAdapter()],
-  networks: [crossFiTestnet],
+  networks: [crossFiMainnet],
   chainImages: {
-    [crossFiTestnet.id]:
+    [crossFiMainnet.id]:
       "https://s2.coinmarketcap.com/static/img/coins/64x64/26202.png",
   },
   metadata,
   projectId,
   allowUnsupportedChain: false,
   allWallets: "SHOW",
-  defaultNetwork: crossFiTestnet,
+  defaultNetwork: crossFiMainnet,
   enableEIP6963: true,
   themeVariables: {
     '--w3m-color-mix': '#1c1917',
