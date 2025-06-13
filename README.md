@@ -48,7 +48,17 @@ To get started with Fundly, follow these steps:
 - **IPFS Integration**: For decentralized storage of campaign details
 - **Backend**: Node.js with Express (for off-chain operations)
 - **Database**: MongoDB (for caching and indexing)
-- **Deployment**: Vercel (frontend) & Base sepolia (smart contracts)
+- **Deployment**: Vercel (frontend) & CrossFi Mainnet (smart contracts)
+
+## Network Status
+
+Fundly is now live on CrossFi Mainnet! 🎉
+- Mainnet Contract Addresses:
+  - Fundly Main Contract: `0x2b2A944CeF81C24fd5bBa7EbE34F318D9d57A48b`
+  - KYC Manager: `0x75E4Eb5F40c48e89e0FDA6e32E88459F5d97183D`
+- Network: CrossFi Mainnet
+- Initial Quorum Votes: 5.0 tokens
+- Explorer: [Coming Soon]
 
 ## Smart Contracts
 
@@ -62,7 +72,7 @@ To compile and deploy contracts:
 
 ```
 npx hardhat compile
-npx hardhat deploy --network <network-name>
+npx hardhat deploy --network crossfi-mainnet
 ```
 
 ## Contributing
