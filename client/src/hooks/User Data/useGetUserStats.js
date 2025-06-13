@@ -7,8 +7,8 @@ import FundlyABI from "../../abis/Fundly.json"
 
 // Error mapping for known error messages
 const ERROR_MESSAGES = {
-  'UserNotFound': "User stats not found",
-  'InvalidAddress': "Invalid wallet address provided",
+  UserNotFound: "User stats not found",
+  InvalidAddress: "Invalid wallet address provided",
 }
 
 const getReadableError = (error) => {
@@ -23,10 +23,7 @@ const getReadableError = (error) => {
   if (error.reason) return error.reason
   if (error.data?.message) return error.data.message
   if (error.message) {
-    let message = error.message
-      .replace("execution reverted:", "")
-      .replace("Error:", "")
-      .trim()
+    const message = error.message.replace("execution reverted:", "").replace("Error:", "").trim()
     return message.charAt(0).toUpperCase() + message.slice(1)
   }
 
@@ -44,7 +41,7 @@ const useGetUserStats = () => {
       if (!contract) {
         const message = "Contract is not available"
         setError(message)
-        toast.error(message)
+        // toast.error(message)
         return null
       }
 
@@ -60,7 +57,7 @@ const useGetUserStats = () => {
 
       try {
         const userStats = await contract.getUserStats(userAddress)
-        
+
         // Format the stats
         const formattedStats = {
           campaignsCreated: Number(userStats.campaignsCreated || 0),
@@ -91,3 +88,4 @@ const useGetUserStats = () => {
 }
 
 export default useGetUserStats
+

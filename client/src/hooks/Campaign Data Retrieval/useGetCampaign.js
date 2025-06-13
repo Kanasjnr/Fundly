@@ -48,7 +48,7 @@ const useGetCampaign = () => {
         }
 
         // Destructure analytics according to contract return values
-        const { totalBackers, fundingProgress, timeRemaining, currentMilestone } = analytics
+        const [totalBackers, fundingProgress, timeRemaining, currentMilestone] = analytics
 
         // Destructure fund flow according to contract return values
         const [donations, milestones] = fundFlow
@@ -69,7 +69,7 @@ const useGetCampaign = () => {
           milestones: milestones.map((m) => ethers.formatEther(m)),
           currentMilestone: Number(campaignData.currentMilestone),
           // Map status exactly as defined in contract enum
-          status: campaignData.status.toString(), // Returns numeric value
+          status: Number(campaignData.status),
           statusText: ["Active", "Successful", "Failed", "Paid"][Number(campaignData.status)],
           analytics: {
             totalBackers: Number(totalBackers), // From getCampaignAnalytics
@@ -125,7 +125,7 @@ const useGetCampaign = () => {
           ])
 
           const [donations, milestones] = fundFlow
-          const { totalBackers, fundingProgress, timeRemaining, currentMilestone } = analytics
+          const [totalBackers, fundingProgress, timeRemaining, currentMilestone] = analytics
 
           return {
             id: index,
@@ -141,7 +141,7 @@ const useGetCampaign = () => {
             paidOut: campaign.paidOut,
             milestones: milestones.map((m) => ethers.formatEther(m)),
             currentMilestone: Number(campaign.currentMilestone),
-            status: campaign.status.toString(),
+            status: Number(campaign.status),
             statusText: ["Active", "Successful", "Failed", "Paid"][Number(campaign.status)],
             analytics: {
               totalBackers: Number(totalBackers),

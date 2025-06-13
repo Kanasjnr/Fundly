@@ -71,14 +71,14 @@ const useVoteOnProposal = () => {
         const message = "Please connect your wallet"
         setError(message)
         toast.error(message)
-        return false
+        return { success: false }
       }
 
       if (!signer || !contract) {
         const message = "Contract or signer is not available"
         setError(message)
-        toast.error(message)
-        return false
+        // toast.error(message)
+        return { success: false }
       }
 
       setLoading(true)
@@ -115,8 +115,16 @@ const useVoteOnProposal = () => {
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
+          // Find the Voted event
+          const event = receipt.events?.find((e) => e.event === "Voted")
+          const votes = event?.args?.votes
+
           toast.success("Vote cast successfully!")
-          return true
+          return {
+            success: true,
+            votes: votes?.toString(),
+            support,
+          }
         } else {
           throw new Error("Transaction failed")
         }
@@ -125,7 +133,7 @@ const useVoteOnProposal = () => {
         const readableError = getReadableError(err)
         setError(readableError)
         toast.error(readableError)
-        return false
+        return { success: false, error: readableError }
       } finally {
         setLoading(false)
       }

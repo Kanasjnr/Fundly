@@ -1,12 +1,13 @@
+"use client"
+
 import { useState, useCallback } from "react"
 import { toast } from "react-toastify"
-import { ethers } from "ethers"
 import { useAppKitAccount } from "@reown/appkit/react"
 import useSignerOrProvider from "../useSignerOrProvider"
 import useContract from "../useContract"
 import FundlyABI from "../../abis/Fundly.json"
 
-const useCreateCampaign = () => {
+const useCompleteMilestone = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const { address, isConnected } = useAppKitAccount()
@@ -14,44 +15,49 @@ const useCreateCampaign = () => {
   const fundlyAddress = import.meta.env.VITE_APP_FUNDLY_CONTRACT_ADDRESS
   const { contract } = useContract(fundlyAddress, FundlyABI)
 
-  const createCampaign = useCallback(
-    async (title, description, target, deadline, image, milestones) => {
+  const completeMilestone = useCallback(
+    async (campaignId, proof) => {
       if (!address || !isConnected) {
         toast.error("Please connect your wallet")
-        return false
+        return { success: false }
       }
 
       if (!signer || !contract) {
-        toast.error("Contract or signer is not available")
-        return false
+        // toast.error("Contract or signer is not available")
+        return { success: false }
       }
 
       setLoading(true)
       setError(null)
 
       try {
-        const tx = await contract.createCampaign(
-          title,
-          description,
-          ethers.parseEther(target.toString()),
-          Math.floor(new Date(deadline).getTime() / 1000),
-          image,
-          milestones,
-        )
-
+        const tx = await contract.completeMilestone(campaignId, proof)
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
-          toast.success("Campaign created successfully!")
-          return true
+          // Find the MilestoneCompleted event
+          const event = receipt.events?.find((e) => e.event === "MilestoneCompleted")
+          const milestoneIndex = event?.args?.milestoneIndex?.toString()
+
+          toast.success("Milestone completed successfully!")
+          return { success: true, milestoneIndex }
         } else {
           throw new Error("Transaction failed")
         }
       } catch (err) {
         console.error("Transaction error:", err)
-        setError("Error creating campaign: " + (err.message || "Unknown error"))
+
+        // Handle specific contract errors
+        if (err.message?.includes("Unauthorized")) {
+          setError("Only the campaign owner can complete milestones.")
+        } else if (err.message?.includes("InvalidMilestoneCount")) {
+          setError("All milestones have already been completed.")
+        } else {
+          setError("Error completing milestone: " + (err.message || "Unknown error"))
+        }
+
         toast.error(`Error: ${err.message || "An unknown error occurred."}`)
-        return false
+        return { success: false, error: err.message }
       } finally {
         setLoading(false)
       }
@@ -59,8 +65,8 @@ const useCreateCampaign = () => {
     [address, isConnected, signer, contract],
   )
 
-  return { createCampaign, loading, error }
+  return { completeMilestone, loading, error }
 }
 
-export default useCreateCampaign
+export default useCompleteMilestone
 

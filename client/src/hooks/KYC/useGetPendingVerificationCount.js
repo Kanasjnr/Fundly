@@ -11,7 +11,7 @@ const useGetPendingVerificationCount = () => {
 
   const getPendingVerificationCount = useCallback(async () => {
     if (!contract) {
-      toast.error("Contract is not available")
+      // toast.error("Contract is not available")
       return
     }
 
@@ -23,7 +23,7 @@ const useGetPendingVerificationCount = () => {
       return count.toNumber()
     } catch (err) {
       console.error("Error getting pending verification count:", err)
-      toast.error(`Error: ${err.message || "An unknown error occurred."}`)
+      // toast.error(`Error: ${err.message || "An unknown error occurred."}`)
       setError(err.message)
       throw err
     } finally {

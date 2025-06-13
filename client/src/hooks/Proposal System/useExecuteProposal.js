@@ -19,12 +19,12 @@ const useExecuteProposal = () => {
     async (proposalId) => {
       if (!address || !isConnected) {
         toast.error("Please connect your wallet")
-        return false
+        return { success: false }
       }
 
       if (!signer || !contract) {
-        toast.error("Contract or signer is not available")
-        return false
+        // toast.error("Contract or signer is not available")
+        return { success: false }
       }
 
       setLoading(true)
@@ -65,8 +65,12 @@ const useExecuteProposal = () => {
         const receipt = await tx.wait()
 
         if (receipt.status === 1) {
+          // Find the ProposalExecuted event
+          const event = receipt.events?.find((e) => e.event === "ProposalExecuted")
+          const success = event?.args?.success
+
           toast.success("Proposal executed successfully!")
-          return true
+          return { success: true, proposalSuccess: success }
         } else {
           throw new Error("Transaction failed")
         }
@@ -76,7 +80,7 @@ const useExecuteProposal = () => {
         const revertReason = err.reason || err.message || "Unknown error"
         setError("Error executing proposal: " + revertReason)
         toast.error(`Error: ${revertReason}`)
-        return false
+        return { success: false, error: revertReason }
       } finally {
         setLoading(false)
       }

@@ -8,11 +8,13 @@ import { useAppKitAccount } from "@reown/appkit/react"
 import ActivityFeed from "./ActivityFeed"
 import Analytics from "./Analytics"
 import AchievementBadges from "./AchievementBadges"
-import useGetUserStats from "../../hooks/Campaigns/useGetUserStats"
-import useGetUserActivities from "../../hooks/Campaigns/useGetUserActivities"
+import useGetUserStats from "../../hooks/User Data/useGetUserStats"
+import useGetUserActivities from "../../hooks/User Data/useGetUserActivities"
 import { Button } from "../ui/button"
 import { toast } from "react-toastify"
 import NotificationCenter from "./NotificationCenter"
+import { Alert, AlertDescription } from "../ui/alert"
+import { AlertCircle } from "lucide-react"
 
 const TIER_NAMES = {
   0: "Novice",
@@ -25,14 +27,15 @@ const TIER_NAMES = {
 const POINTS_PER_TIER = 100 // Assuming 100 points per tier
 
 const DashboardContent = () => {
-  const { address } = useAppKitAccount()
-  const { getUserStats, loading } = useGetUserStats()
+  const { address, isConnected } = useAppKitAccount()
+  const { getUserStats, loading, error: statsError } = useGetUserStats()
   const [stats, setStats] = useState(null)
-  const { getUserActivities, loading: loadingActivities, error } = useGetUserActivities()
+  const { getUserActivities, loading: loadingActivities, error: activitiesError } = useGetUserActivities()
   const [activities, setActivities] = useState([])
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
   const [activeTab, setActiveTab] = useState("activity")
+  const [refreshing, setRefreshing] = useState(false)
 
   const [fetchOptions, setFetchOptions] = useState({
     fromBlock: -9000,
@@ -61,6 +64,8 @@ const DashboardContent = () => {
 
       try {
         const userActivities = await getUserActivities(address, fetchOptions)
+
+        // Filter out duplicates and null values
         const uniqueActivities = userActivities.filter((activity, index, self) => {
           if (!activity) return false
           const activityKey = `${activity.type}-${activity.timestamp}-${
@@ -114,7 +119,8 @@ const DashboardContent = () => {
     setPage((prev) => prev + 1)
   }
 
-  const refreshActivities = () => {
+  const refreshActivities = async () => {
+    setRefreshing(true)
     setFetchOptions({
       fromBlock: -9000,
       toBlock: "latest",
@@ -122,36 +128,69 @@ const DashboardContent = () => {
       retryDelay: 2000,
     })
     setPage(1)
-    fetchActivities(true)
+    await fetchActivities(true)
+    await fetchStats()
+    setRefreshing(false)
+    toast.success("Dashboard refreshed")
   }
 
   useEffect(() => {
-    fetchStats()
-    const statsInterval = setInterval(fetchStats, 60000)
-    return () => clearInterval(statsInterval)
-  }, [fetchStats])
+    if (isConnected) {
+      fetchStats()
+      const statsInterval = setInterval(fetchStats, 60000) // Refresh stats every minute
+      return () => clearInterval(statsInterval)
+    }
+  }, [fetchStats, isConnected])
 
   useEffect(() => {
-    fetchActivities(true)
-    const activitiesInterval = setInterval(() => fetchActivities(true), 30000)
-    return () => clearInterval(activitiesInterval)
-  }, [fetchActivities])
+    if (isConnected) {
+      fetchActivities(true)
+      const activitiesInterval = setInterval(() => fetchActivities(true), 60000) // Refresh activities every minute
+      return () => clearInterval(activitiesInterval)
+    }
+  }, [fetchActivities, isConnected])
 
   const calculatePointsToNextTier = (currentScore, currentTier) => {
     const nextTierThreshold = (currentTier + 1) * POINTS_PER_TIER
     return nextTierThreshold - currentScore
   }
 
+  if (!isConnected) {
+    return (
+      <div className="container mx-auto p-6 max-w-7xl">
+        <Alert className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Please connect your wallet to view your dashboard</AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
+
   if (loading && !stats) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
 
   return (
     <main className="container mx-auto p-6 max-w-7xl">
+      {(statsError || activitiesError) && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{statsError || activitiesError}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Button variant="outline" size="sm" onClick={refreshActivities} disabled={refreshing || loadingActivities}>
+          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -173,7 +212,7 @@ const DashboardContent = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : `${stats?.totalDonated || 0} ETH`}
+              {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : `${stats?.totalDonated || 0} XFI`}
             </div>
             <p className="text-xs text-muted-foreground">Across {stats?.campaignsBacked || 0} campaigns</p>
           </CardContent>
@@ -229,8 +268,13 @@ const DashboardContent = () => {
                   <CardTitle>Recent Activity</CardTitle>
                   <p className="text-sm text-muted-foreground">Your recent interactions with campaigns and proposals</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={refreshActivities} disabled={loadingActivities}>
-                  <RefreshCw className={`h-4 w-4 ${loadingActivities ? "animate-spin" : ""}`} />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={refreshActivities}
+                  disabled={refreshing || loadingActivities}
+                >
+                  <RefreshCw className={`h-4 w-4 ${refreshing || loadingActivities ? "animate-spin" : ""}`} />
                   <span className="sr-only">Refresh</span>
                 </Button>
               </CardHeader>
@@ -245,7 +289,7 @@ const DashboardContent = () => {
                   <TabsContent value="all" className="space-y-4">
                     <ActivityFeed
                       activities={activities}
-                      isLoading={loadingActivities}
+                      isLoading={loadingActivities || refreshing}
                       loadMore={loadMore}
                       hasMore={hasMore}
                     />
@@ -255,7 +299,7 @@ const DashboardContent = () => {
                       activities={activities.filter((a) =>
                         ["CAMPAIGN_CREATED", "CAMPAIGN_PAID", "STATUS_CHANGED", "MILESTONE_UPDATED"].includes(a.type),
                       )}
-                      isLoading={loadingActivities}
+                      isLoading={loadingActivities || refreshing}
                       loadMore={loadMore}
                       hasMore={hasMore}
                     />
@@ -263,7 +307,7 @@ const DashboardContent = () => {
                   <TabsContent value="donations" className="space-y-4">
                     <ActivityFeed
                       activities={activities.filter((a) => a.type === "DONATION_MADE")}
-                      isLoading={loadingActivities}
+                      isLoading={loadingActivities || refreshing}
                       loadMore={loadMore}
                       hasMore={hasMore}
                     />
@@ -273,7 +317,7 @@ const DashboardContent = () => {
                       activities={activities.filter((a) =>
                         ["PROPOSAL_CREATED", "VOTE_CAST", "PROPOSAL_EXECUTED"].includes(a.type),
                       )}
-                      isLoading={loadingActivities}
+                      isLoading={loadingActivities || refreshing}
                       loadMore={loadMore}
                       hasMore={hasMore}
                     />

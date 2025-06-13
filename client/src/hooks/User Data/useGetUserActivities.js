@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { useState, useCallback } from "react";
-import { toast } from "react-toastify";
-import { formatEther } from "ethers";
-import useContract from "../useContract";
-import FundlyABI from "../../abis/Fundly.json";
+import { useState, useCallback } from "react"
+import { toast } from "react-toastify"
+import { ethers } from "ethers"
+import useContract from "../useContract"
+import FundlyABI from "../../abis/Fundly.json"
 
 const useGetUserActivities = () => {
   const [loading, setLoading] = useState(false)
@@ -126,7 +126,7 @@ const useGetUserActivities = () => {
                 timestamp: block.timestamp * 1000, // Convert from seconds to milliseconds
                 metadata: {
                   campaignId: event.args.campaignId.toString(),
-                  target: `${formatEther(event.args.target)} ETH`,
+                  target: `${ethers.formatEther(event.args.target)} ETH`,
                 },
               }
             }),
@@ -141,7 +141,7 @@ const useGetUserActivities = () => {
                 description: `Donated to campaign #${event.args.campaignId}`,
                 timestamp: block.timestamp * 1000,
                 metadata: {
-                  amount: `${formatEther(event.args.amount)} ETH`,
+                  amount: `${ethers.formatEther(event.args.amount)} ETH`,
                   campaignId: event.args.campaignId.toString(),
                   tokenId: event.args.tokenId.toString(),
                 },
@@ -187,7 +187,7 @@ const useGetUserActivities = () => {
                 timestamp: block.timestamp * 1000,
                 metadata: {
                   campaignId: event.args.campaignId.toString(),
-                  amount: `${formatEther(event.args.amount)} ETH`,
+                  amount: `${ethers.formatEther(event.args.amount)} ETH`,
                 },
               }
             }),
@@ -236,7 +236,7 @@ const useGetUserActivities = () => {
                 metadata: {
                   campaignId: event.args.campaignId.toString(),
                   milestoneIndex: event.args.milestoneIndex.toString(),
-                  newValue: formatEther(event.args.newValue) + " ETH",
+                  newValue: ethers.formatEther(event.args.newValue) + " ETH",
                 },
               }
             }),

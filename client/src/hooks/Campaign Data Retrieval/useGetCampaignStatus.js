@@ -14,7 +14,7 @@ const useGetCampaignStatus = () => {
   const getCampaignStatus = useCallback(
     async (campaignId) => {
       if (!contract) {
-        toast.error("Contract is not available")
+        // toast.error("Contract is not available")
         return null
       }
 
@@ -22,8 +22,12 @@ const useGetCampaignStatus = () => {
       setError(null)
 
       try {
-        const status = await contract.getCampaignStatus(campaignId)
-        return status
+        // Get the campaign to check its status
+        const campaign = await contract.getCampaign(campaignId)
+        const status = Number(campaign.status)
+        const statusText = ["Active", "Successful", "Failed", "Paid"][status]
+
+        return { status, statusText }
       } catch (err) {
         console.error("Error fetching campaign status:", err)
         setError("Error fetching campaign status: " + (err.message || "Unknown error"))
@@ -40,3 +44,4 @@ const useGetCampaignStatus = () => {
 }
 
 export default useGetCampaignStatus
+
