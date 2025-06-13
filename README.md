@@ -1,11 +1,16 @@
-# Fundly: Web3-Powered Crowdfunding Platform
+# Fundly: Web3-Powered Crowdfunding Platform 🚀
+
+> **🚨 LIVE ON CROSSFI MAINNET!** Fundly is now fully operational on CrossFi mainnet. Start creating and backing campaigns today!
 
 ## Overview
 
 Fundly is a decentralized crowdfunding platform built on the CrossFi blockchain that revolutionizes how creators and entrepreneurs raise funds. By leveraging blockchain technology, Fundly ensures transparency, security, and trust in the crowdfunding process. The platform combines traditional crowdfunding concepts with Web3 innovations to create a more efficient and trustworthy fundraising ecosystem.
 
+> **🎉 Production Ready**: Fundly is live and fully functional on CrossFi mainnet, ready for real-world campaigns and contributions.
+
 ## Why Fundly?
 
+- **Production Ready**: Fully operational on CrossFi mainnet with verified smart contracts
 - **Transparency**: All transactions and campaign progress are recorded on the blockchain, providing complete transparency
 - **Security**: Smart contracts ensure funds are managed securely and released according to predefined milestones
 - **Trust**: KYC verification system builds trust between campaign creators and backers
@@ -110,8 +115,10 @@ Fundly is a decentralized crowdfunding platform built on the CrossFi blockchain 
 ### Prerequisites
 - Node.js (v16 or higher)
 - MetaMask or compatible Web3 wallet
-- CrossFi network configured in your wallet
+- CrossFi network configured in your wallet (Chain ID: 4158)
 - XFI tokens for gas fees
+
+> **Quick Start**: Visit [Fundly App](https://app.fundly.com) to start using the platform on CrossFi mainnet!
 
 ### Installation
 
@@ -155,13 +162,17 @@ Fundly is a decentralized crowdfunding platform built on the CrossFi blockchain 
 
 ## Network Information
 
-### CrossFi Mainnet
+### 🚀 CrossFi Mainnet (LIVE)
+- **Status**: ✅ Production Ready
 - **Chain ID**: 4158
 - **Native Currency**: XFI
-- **Contract Addresses**:
+- **Contract Addresses** (Verified):
   - Fundly Main Contract: `0x2b2A944CeF81C24fd5bBa7EbE34F318D9d57A48b`
   - KYC Manager: `0x75E4Eb5F40c48e89e0FDA6e32E88459F5d97183D`
 - **Initial Quorum**: 5.0 tokens
+- **Explorer**: [View on CrossFi Explorer](https://explorer.crossfi.org)
+
+> **Ready to Use**: The platform is fully operational on CrossFi mainnet. Connect your wallet and start creating or backing campaigns today!
 
 ## Security
 
