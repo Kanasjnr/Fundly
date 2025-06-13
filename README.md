@@ -118,7 +118,7 @@ Fundly is a decentralized crowdfunding platform built on the CrossFi blockchain 
 - CrossFi network configured in your wallet (Chain ID: 4158)
 - XFI tokens for gas fees
 
-> **Quick Start**: Visit [Fundly App](https://app.fundly.com) to start using the platform on CrossFi mainnet!
+> **Quick Start**: Visit [Fundly App](www.fundlyapp.xyz/) to start using the platform on CrossFi mainnet!
 
 ### Installation
 
@@ -170,7 +170,6 @@ Fundly is a decentralized crowdfunding platform built on the CrossFi blockchain 
   - Fundly Main Contract: `0x2b2A944CeF81C24fd5bBa7EbE34F318D9d57A48b`
   - KYC Manager: `0x75E4Eb5F40c48e89e0FDA6e32E88459F5d97183D`
 - **Initial Quorum**: 5.0 tokens
-- **Explorer**: [View on CrossFi Explorer](https://explorer.crossfi.org)
 
 > **Ready to Use**: The platform is fully operational on CrossFi mainnet. Connect your wallet and start creating or backing campaigns today!
 
